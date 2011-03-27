@@ -17,16 +17,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.swing.JColorChooser;
-import javax.swing.JOptionPane;
 
 public final class Toolkit {
 
@@ -78,8 +75,9 @@ public final class Toolkit {
         if(icolors == null || icolors.equals(""))return Color.BLACK;
         icolors = icolors.trim();
         icolors = icolors.replaceAll("_", " ");
-        if(Toolkit.countSubstr(icolors, ",")==2){
-            String[] colors = icolors.trim().split(",");
+        icolors = icolors.replaceAll(",", " ");
+        if(countSubstr(icolors, " ")==2){
+            String[] colors = icolors.trim().split(" ");
             return new Color(Integer.parseInt(colors[0].trim()),
                              Integer.parseInt(colors[1].trim()),
                              Integer.parseInt(colors[2].trim()));
@@ -109,6 +107,7 @@ public final class Toolkit {
 
     /**
      * Trims the string with begin and end limiters.
+     * 
      * @param stack The source String.
      * @param begin The left side limiter.
      * @param end The right side limiter.
@@ -124,6 +123,7 @@ public final class Toolkit {
 
     /**
      * Trims the string with begin and end limiters.
+     *
      * @param stack The source String.
      * @param begin The left side limiter.
      * @param end The right side limiter.
@@ -173,19 +173,15 @@ public final class Toolkit {
      * @return ProgressThread instance to watch the unzipping Progress.
      * @see ProgressThread
      */
-    public static ProgressThread unzipFile(final String filename,final String where){
-        if(!new File(filename).canRead()){JOptionPane.showMessageDialog(null, "Can't read source zip!\n"+filename);return null;}
-        if(!new File(filename).getParentFile().setWritable(true)){JOptionPane.showMessageDialog(null, "Can't write to parent!\n"+new File(filename).getParent());return null;}
-        ProgressThread t = new ProgressThread("Exracting..."){
-            public void run(){
-        try{
+    public static boolean unzipFile(final String filename,final String where) throws IOException{
+        if(!new File(filename).canRead()){Logger.getAnonymousLogger().log(Level.SEVERE, "Can't read source zip!\n"+filename);return false;}
+        if(!new File(filename).getParentFile().setWritable(true)){Logger.getAnonymousLogger().log(Level.SEVERE, "Can't write to parent!\n"+new File(filename).getParent());return false;}
+
         ZipFile archive = new ZipFile(filename);
         Enumeration<? extends ZipEntry> fileList = archive.entries();
-        setMaximum(archive.size());int i=0;
         // Go through each file in the ZIP archive.
         for (ZipEntry e = fileList.nextElement();fileList.hasMoreElements();e = fileList.nextElement()) {
-            System.out.println("Expanding " + e.getName());
-            setCurrent(i);setStatus("Expanding: "+e.getName());
+            Logger.getAnonymousLogger().log(Level.INFO,"Expanding " + e.getName());
             // If the zip entry is a directory, make the directory.
             if (e.isDirectory()) new File(where+e.getName()).mkdir();
             else {
@@ -200,10 +196,8 @@ public final class Toolkit {
                 out.close();
 
             }
-            i++;
         }
-        setDone();}catch (IOException e) {e.printStackTrace();}}};
-        t.start();return t;
+        return true;
     }
 
     /**
@@ -237,6 +231,7 @@ public final class Toolkit {
     /**
      * Checks for an existing settings directory for the specified {@link program}
      * and returns the path to it. If it doesn't exist, it will try create one for you.
+     * 
      * @param program The program name.
      * @return File pointing to the location.
      */
@@ -259,6 +254,19 @@ public final class Toolkit {
         System.out.println("Creating settings dir: "+work);
         if((!work.exists())&&(!work.mkdirs()))throw new RuntimeException("Failed to create the setttings dir: "+work);
         return work;
+    }
+
+    /**
+     * Used to simulate rows in console output.
+     * 
+     * @param in The string to append the spaces to.
+     * @param maxlen The maximum size of the row.
+     * @return the new String with appended spaces.
+     */
+    public static String insertSpaces(String in,int maxlen){
+        for(int i=in.length();i<maxlen;i++)
+            in+=" ";
+        return in;
     }
 
 }
