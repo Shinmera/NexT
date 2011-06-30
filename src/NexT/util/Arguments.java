@@ -53,7 +53,7 @@ public class Arguments {
             alis.add(aliass);
             alias.put(args,aliass);
             descr.put(args,explanation);
-            nvals.put(args,value);
+            if(vals!=null)nvals.put(args,value);
         }
     }
 

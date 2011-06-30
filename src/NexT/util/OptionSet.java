@@ -33,6 +33,7 @@ public class OptionSet<K extends Object,V extends ArrayList> {
 
     public boolean containsValue(V value){return map.containsValue(value);}
     public boolean containsKey(K key){return map.containsKey(key);}
+    public boolean containsValue(K value,Object o){return map.get(value).contains(o);}
 
     public int indexOfValue(V value){
         if(!map.containsValue(value))return -1;int tmp=0;
@@ -42,6 +43,8 @@ public class OptionSet<K extends Object,V extends ArrayList> {
     public int indexOfKey(K key){return list.indexOf(key);}
 
     public void remove(K key){list.remove(key);map.remove(key);}
+    public void remove(K key,Object o){map.get(key).remove(o);}
+    public void remove(K key,int i){map.get(key).remove(i);}
     public void remove(int i){map.remove(list.get(i));list.remove(i);}
     public void removeAllAt(int j){
         for(int i=0;i<size();i++)get(i).remove(j);

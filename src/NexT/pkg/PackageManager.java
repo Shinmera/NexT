@@ -155,6 +155,40 @@ public class PackageManager {
         }
         return true;
     }
+    
+    /**
+     * Force install the selected package.
+     * @param pkg The package name
+     * @param folder The folder to install the data to. If null, the home dir or package specific directory will be used.
+     * @return Success
+     */
+    public boolean forceInstall(String pkg,File folder){
+        System.out.println("INSTALL: "+pkg);
+        HashMap<String,String> info = pckgd.findPackage(pkg);
+        if(info==null)return false;
+            if(folder==null){
+                String path = info.get("basedir");
+                path = path.trim().replaceAll("/", File.separator);
+                String temp = Toolkit.inBetween(path, "<S", ">");
+                path = path.replace("<S"+temp+">", Toolkit.getSettingsDir(temp).getAbsolutePath());
+                path = path.replace("<U>",System.getProperty("user.home"));
+                folder = new File(path);
+            }
+            try{
+                if(info.containsKey("depends")){
+                    String[] pkgs = info.get("depends").split(";");
+                    for(int i=0;i<pkgs.length;i++){
+                        if(!config.get("package").contains(pkgs[i]))install(pkgs[i],null);
+                        else upgrade(pkgs[i]);
+                    }
+                }
+                pckgd.downloadPackage(info.get("id"), folder);
+            }catch(Exception e){e.printStackTrace();return false;}
+            config.get("package").add(info.get("id"));
+            config.get("version").add(info.get("version"));
+            config.get("basedir").add(folder.getAbsolutePath());
+        return true;
+    }
 
     /**
      * Remove the selected package.

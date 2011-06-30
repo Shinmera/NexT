@@ -38,16 +38,16 @@ public class SimpleSet<K extends Object,V extends Object> {
     public int indexOfKey(K key){return list.indexOf(key);}
 
     public void remove(K key){list.remove(key);map.remove(key);}
-    public void remove(int i){map.remove(list.get(i));list.remove(i);}
+    public void removeAt(int i){map.remove(list.get(i));list.remove(i);}
 
     public V get(K key){return map.get(key);}
-    public V get(int i){return map.get(list.get(i));}
+    public V getAt(int i){return map.get(list.get(i));}
     public K    getKey(int i){return list.get(i);}
     public HashMap   getMap(){return map;}
     public ArrayList getList(){return list;}
 
     public void put(K key,V value){if(!list.contains(key))list.add(key);map.put(key, value);}
-    public void put(int i,V value){map.put(list.get(i), value);}
+    public void putAt(int i,V value){map.put(list.get(i), value);}
     public void setMap(HashMap map){this.map=map;}
     public void setList(ArrayList list){this.list=list;}
 
@@ -60,7 +60,7 @@ public class SimpleSet<K extends Object,V extends Object> {
         OptionSet set = new OptionSet();
         for(int i=0;i<size();i++){
             ArrayList<V> temp = new ArrayList();
-            temp.add(get(i));
+            temp.add(getAt(i));
             set.put(getKey(i),temp);
         }
         return set;
@@ -69,7 +69,7 @@ public class SimpleSet<K extends Object,V extends Object> {
     public String toString(){
         String s = "";
         for(int i=0;i<size();i++){
-            s+=getKey(i)+": "+get(i)+"\n";
+            s+=getKey(i)+": "+getAt(i)+"\n";
         }
         return s;
     }

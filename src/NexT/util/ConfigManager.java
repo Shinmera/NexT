@@ -75,8 +75,12 @@ public class ConfigManager {
 
             for(int i=0;i<options.size();i++){
                 ArrayList<String> temp = options.get(i);
-                for(int j=0;j<temp.size();j++){
-                    pw.println(options.getKey(i)+": "+temp.get(j));
+                if(temp.size()>0){
+                    for(int j=0;j<temp.size();j++){
+                        pw.println(options.getKey(i)+": "+temp.get(j));
+                    }
+                }else{
+                    pw.println(options.getKey(i));
                 }
             }
 
@@ -116,19 +120,24 @@ public class ConfigManager {
             if(!read.startsWith("#"+programName.toUpperCase()+programVersion)){if(verbose)System.out.println("CONFMAN: Wrong or missing header!");return false;}
             while ((read = in.readLine()) != null) {
                 if(!read.startsWith("#")&&!read.isEmpty()){
-                    String key = read.substring(0,read.indexOf(":"));
-                    String value = read.substring(read.indexOf(":")+2);
-                    if(!options.containsKey(key)){
-                        ArrayList<String> temp = new ArrayList();
-                        temp.add(value);
-                        options.put(key,temp);
-                    } else {
-                        if(!overwrite)
-                            options.get(key).add(value);
-                        else{
-                            options.get(key).clear();
-                            options.get(key).add(value);
+                    if(read.contains(":")){
+                        String key = read.substring(0,read.indexOf(":"));
+                        String value = read.substring(read.indexOf(":")+2);
+                        if(!options.containsKey(key)){
+                            ArrayList<String> temp = new ArrayList();
+                            temp.add(value);
+                            options.put(key,temp);
+                        } else {
+                            if(!overwrite)
+                                options.get(key).add(value);
+                            else{
+                                options.get(key).clear();
+                                options.get(key).add(value);
+                            }
                         }
+                    }else{
+                        ArrayList<String> temp = new ArrayList();
+                        options.put(read,temp);
                     }
                 }
                 if(read.equals("#EOF"))break;

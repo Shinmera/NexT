@@ -25,6 +25,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.swing.JColorChooser;
 
+/**
+ * Supplies various commonly usable functions.
+ * @author Shinmera
+ */
 public final class Toolkit {
 
     /**
