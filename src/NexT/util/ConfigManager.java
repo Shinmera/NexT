@@ -121,8 +121,8 @@ public class ConfigManager {
             while ((read = in.readLine()) != null) {
                 if(!read.startsWith("#")&&!read.isEmpty()){
                     if(read.contains(":")){
-                        String key = read.substring(0,read.indexOf(":"));
-                        String value = read.substring(read.indexOf(":")+2);
+                        String key = read.substring(0,read.indexOf(":")).trim();
+                        String value = read.substring(read.indexOf(":")+1).trim();
                         if(!options.containsKey(key)){
                             ArrayList<String> temp = new ArrayList();
                             temp.add(value);

@@ -10,6 +10,11 @@
 package NexT.util;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /*
  * OptionSet to easily manage variables in one object.
@@ -20,8 +25,26 @@ public class SimpleSet<K extends Object,V extends Object> {
     private ArrayList<K> list;
 
     public SimpleSet(){map = new HashMap();list = new ArrayList();}
+    public SimpleSet(HashMap<K,V> map2){
+        map=map2;
+        list = new ArrayList();
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            list.add((K) pairs.getKey());
+        }
+    }
+    public SimpleSet(ArrayList<V> list2){
+        map = new HashMap();
+        list = new ArrayList();
+        for(int i=0;i<list2.size();i++){
+            map.put((K) (i + ""), list2.get(i));
+            list.add((K) (i + ""));
+        }
+    }
     
     public void clear(){map.clear();list.clear();}
+    public void sort(){Collections.sort((List) list);}
 
     public int size(){return list.size();}
 

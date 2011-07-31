@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -271,6 +272,19 @@ public final class Toolkit {
         for(int i=in.length();i<maxlen;i++)
             in+=" ";
         return in;
+    }
+
+    public static HashMap<String,String> stringToMap(String s){
+        HashMap<String,String> map = new HashMap();
+        String[] lines = s.split("\n");
+        for(int i=0;i<lines.length;i++){
+            if(lines[i].contains("=")){
+                String key = lines[i].substring(0,lines[i].indexOf("=")).trim();
+                String val = lines[i].substring(lines[i].indexOf("=")+1).trim();
+                map.put(key,val);
+            }
+        }
+        return map;
     }
 
 }
