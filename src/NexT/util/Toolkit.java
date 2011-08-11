@@ -274,6 +274,12 @@ public final class Toolkit {
         return in;
     }
 
+    /**
+     * Turns a string into a hash map, using newline and equals as delimiters.
+     *
+     * @param s the string to map-ify
+     * @return The resulting key->value map
+     */
     public static HashMap<String,String> stringToMap(String s){
         HashMap<String,String> map = new HashMap();
         String[] lines = s.split("\n");
@@ -285,6 +291,13 @@ public final class Toolkit {
             }
         }
         return map;
+    }
+
+    public static Object[] joinArray(Object[] A,Object[] B){
+        Object[] C= new Object[A.length+B.length];
+        System.arraycopy(A, 0, C, 0, A.length);
+        System.arraycopy(B, 0, C, A.length, B.length);
+        return C;
     }
 
 }
