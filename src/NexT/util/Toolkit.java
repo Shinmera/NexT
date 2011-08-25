@@ -281,23 +281,94 @@ public final class Toolkit {
      * @return The resulting key->value map
      */
     public static HashMap<String,String> stringToMap(String s){
+        return stringToMap(s,"\n","=");
+    }
+
+    /**
+     * Turns a string into a hash map, using newline and equals as delimiters.
+     *
+     * @param s the string to map-ify
+     * @param delim1 the delimiter between two key->value pairs
+     * @param delim2 the delimiter between the key and the value
+     * @return The resulting key->value map
+     */
+    public static HashMap<String,String> stringToMap(String s,String delim1,String delim2){
         HashMap<String,String> map = new HashMap();
-        String[] lines = s.split("\n");
+        String[] lines = s.split(delim1);
         for(int i=0;i<lines.length;i++){
-            if(lines[i].contains("=")){
-                String key = lines[i].substring(0,lines[i].indexOf("=")).trim();
-                String val = lines[i].substring(lines[i].indexOf("=")+1).trim();
+            if(lines[i].contains(delim2)){
+                String key = lines[i].substring(0,lines[i].indexOf(delim2)).trim();
+                String val = lines[i].substring(lines[i].indexOf(delim2)+1).trim();
                 map.put(key,val);
             }
         }
         return map;
     }
 
+    /**
+     * Joins two arrays together.
+     * @param A The first array.
+     * @param B The second array.
+     * @return The resulting array.
+     */
     public static Object[] joinArray(Object[] A,Object[] B){
         Object[] C= new Object[A.length+B.length];
         System.arraycopy(A, 0, C, 0, A.length);
         System.arraycopy(B, 0, C, A.length, B.length);
         return C;
+    }
+
+    /**
+     * Makes a number positive.
+     * @param d a number
+     * @return the positive number
+     */
+    public static double p(double d){
+        if(d<0)return d*-1;else return d;
+    }
+
+    /**
+     * Conveniently print a command line menu header
+     * @param text The text that should be enboxed.
+     * @param c The border character.
+     * @param innerBorder The distance between border and text.
+     * @param log If set, the menu will be printed to the logger, instead of the default system stream.
+     */
+    public static void printMenu(String text,String c,int innerBorder,Logger log){
+        String[] lines = text.split("\n");
+        //determine longest line
+        int maxLines = 0;
+        for(int i=0;i<lines.length;i++){
+            if(lines[i].length()>maxLines)maxLines = lines[i].length();
+        }
+
+        printToLoggerOrSys(getN(c,maxLines+2*innerBorder+2*c.length()),log);
+        for(int i=0;i<lines.length;i++){
+            if(lines[i].startsWith("><"))
+                    printToLoggerOrSys(c+getN(" ",(maxLines-lines[i].length())/2+1+innerBorder)+lines[i].substring(2)+getN(" ",(maxLines-lines[i].length())/2+1+innerBorder)+c,log);
+            else
+                    printToLoggerOrSys(c+getN(" ",innerBorder)+lines[i]+getN(" ",maxLines-lines[i].length()+innerBorder)+c,log);
+        }
+        printToLoggerOrSys(getN(c,maxLines+2*innerBorder+2*c.length()),log);
+    }
+
+    private static void printToLoggerOrSys(String s,Logger log){
+        if(log==null)System.out.println(s);
+        else log.info(s);
+    }
+
+    private static String getN(String c,int n){
+        String ret = "";
+        for(int i=0;i<n;i++){ret+=c;}
+        return ret;
+    }
+
+    public static String unifyNumberString(int n,int m){
+        String ret = n+"";
+        for(int i=m;i>0;i--){
+            if(n<Math.pow(10,i))ret="0"+ret;
+        }
+        return ret;
     }
 
 }

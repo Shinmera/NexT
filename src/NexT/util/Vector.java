@@ -19,6 +19,9 @@ public class Vector {
     public double getX(){return x;}
     public double getY(){return y;}
     public double getZ(){return z;}
+    public void setX(double x){this.x=x;}
+    public void setY(double y){this.y=y;}
+    public void setZ(double z){this.z=z;}
 
     public Vector subtract(Vector v){
         Vector ret = new Vector(x-v.x,y-v.y,z-v.z);
@@ -30,8 +33,18 @@ public class Vector {
         return ret;
     }
 
+    public Vector sub(Vector v){
+        Vector ret = new Vector(x-v.x,y-v.y,z-v.z);
+        return ret;
+    }
+
     public Vector multiply(double d){
         Vector ret = new Vector(x*d,y*d,z*d);
+        return ret;
+    }
+
+    public Vector divide(double d){
+        Vector ret = new Vector(x/d,y/d,z/d);
         return ret;
     }
 
@@ -51,7 +64,7 @@ public class Vector {
     }
 
     public void normalize(){
-        double d = length();
+        double d = Toolkit.p(length());
         x/=d;y/=d;z/=d;
     }
 
