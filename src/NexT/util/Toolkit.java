@@ -12,11 +12,15 @@ package NexT.util;
 import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -366,9 +370,48 @@ public final class Toolkit {
     public static String unifyNumberString(int n,int m){
         String ret = n+"";
         for(int i=m;i>0;i--){
-            if(n<Math.pow(10,i))ret="0"+ret;
+            if(n<java.lang.Math.pow(10,i))ret="0"+ret;
         }
         return ret;
+    }
+
+    /**
+     * Saves a string to a text file in UTF-8 encoding.
+     * @param s The string to save.
+     * @param f The file to save the string to.
+     * @return true on success, false on failure.
+     */
+    public static boolean saveStringToFile(String s,File f){
+        try{
+            f.createNewFile();
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f),"UTF-8"));
+            pw.print(s);
+            pw.flush();
+            pw.close();
+        }catch(IOException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Reads in a file to a String.
+     * @param f The file to read in.
+     * @return The read String. Empty on failure.
+     */
+    public static String loadFileToString(File f){
+        StringBuilder s = new StringBuilder();
+        try{
+            BufferedReader in = new BufferedReader(new FileReader(f));
+            String read = "";
+            while ((read = in.readLine()) != null)s.append(read+"\n");
+            in.close();
+        }catch(IOException e){
+            e.printStackTrace();
+            return "";
+        }
+        return s.toString();
     }
 
 }

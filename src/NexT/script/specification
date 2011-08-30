@@ -1,0 +1,25 @@
+#NexT/script                                                                    This line is essential, it defines the script header. Files without it won't load.
+int a                                                                           Uninitialized int var.
+double b = 0.5                                                                  Initialized double var.
+string c = "oh man"                                                             Initialized string var.
+boolean d = true                                                                Initialized boolean var.
+
+defun testFunction{                                                             Function definition. Defun keyword, followed by function name. No argument definition.
+    int a = 10                                                                  Local scope variables hide global ones.
+    b = (+ $0 5 (randomInt -100 100 ) (sin (/ a 10 ) ) )                        Math expressions follow LISP syntax and can call other functions.
+    if a >= b {                                                                 If statements support the following comparisons: <,>,==,<=,>=,!=
+        return a                                                                Return statements are an immediate function exit point.
+    }                                                                           Brackets around if blocks are enforced.
+    return b
+}
+
+defun randomInt{
+    return (+ (* (rand) (+ (makePositive $1 ) (makePositive $0 ) ) ) $0 )       Arguments can be accessed via $n
+}
+
+defun makePositive{
+    if $0 < 0 {
+        return (* $0 -1 )
+    }
+    return $0
+}
