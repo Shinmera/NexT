@@ -17,8 +17,10 @@ public class Repository {
 
     public static void main(String[] args) throws MalformedURLException{
         Repository repo = new Repository(new URL("http://repo.tymoon.eu/v2/test/"));
-        System.out.println("PACKAGES: \n"+Toolkit.implode(repo.getPackageList(),"\n"));
-        repo.installPackage("testpack",new File("."));
+        System.out.println("PACKAGES: "+Toolkit.implode(repo.getPackageList(),";"));
+        Package pack = repo.getPackage("testpack");
+        System.out.println("Testpack URL: "+pack.getURL());
+        if(repo.installPackage(pack,new File(".")))System.out.println("TEMP: "+pack.getTempFile().getAbsolutePath());
     }
 
     public Repository(){}
@@ -37,7 +39,10 @@ public class Repository {
     }
 
     public boolean installPackage(String pkg,File location){
-        Package pack = new Package(this,pkg);
+        return installPackage(new Package(this,pkg),location);
+    }
+
+    public boolean installPackage(Package pack,File location){
         if(installDependencies(pack,location)){
             if(pack.installPackage(location))
                 return true;
@@ -48,13 +53,20 @@ public class Repository {
     public boolean installDependencies(Package pkg,File location){
         String[] deps = pkg.getDependencies();
         for(int i=0;i<deps.length;i++){
-            Logger.getLogger("NexT").info("[NexT][Repository] Installing dependency: "+deps[i]);
-            Package pack = new Package(this,deps[i]);
-            if(installDependencies(pack,location)){
-                if(!pack.installPackage(location))return false;
-            }else return false;
+            deps[i]=deps[i].trim();
+            if(deps[i].length()!=0){
+                Logger.getLogger("NexT").info("[NexT][Repository] Installing dependency: "+deps[i]);
+                Package pack = new Package(this,deps[i]);
+                if(installDependencies(pack,location)){
+                    if(!pack.installPackage(location))return false;
+                }else return false;
+            }
         }
         return true;
+    }
+
+    public Package getPackage(String pkg){
+        return new Package(this,pkg);
     }
 
     public URL getURL(){return url;}

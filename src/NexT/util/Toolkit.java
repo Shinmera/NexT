@@ -157,18 +157,17 @@ public final class Toolkit {
      */
     public static boolean downloadFile(URL url_str, File saveFile){
         try{
-        BufferedInputStream in = new java.io.BufferedInputStream(
-                url_str.openStream());
-        FileOutputStream fos = new FileOutputStream(saveFile);
-        BufferedOutputStream bout = new BufferedOutputStream(fos,1024);
-        byte[] data = new byte[1024];
-        int x=0;
-        while((x=in.read(data,0,1024))>=0){
-            bout.write(data,0,x);
-        }
-        bout.close();
-        in.close();
-        }catch(Exception e){e.printStackTrace();return false;}
+            BufferedInputStream in = new java.io.BufferedInputStream(url_str.openStream());
+            FileOutputStream fos = new FileOutputStream(saveFile);
+            BufferedOutputStream bout = new BufferedOutputStream(fos,1024);
+            byte[] data = new byte[1024];
+            int x=0;
+            while((x=in.read(data,0,1024))>=0){
+                bout.write(data,0,x);
+            }
+            bout.close();
+            in.close();
+        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);return false;}
 	return true;
     }
 
@@ -194,24 +193,37 @@ public final class Toolkit {
      * @return success boolean.
      */
     public static boolean unzipFile(File filename,File where) throws IOException{
-        ZipFile archive = new ZipFile(filename);
-        Enumeration<? extends ZipEntry> fileList = archive.entries();
-        // Go through each file in the ZIP archive.
-        for (ZipEntry e = fileList.nextElement();fileList.hasMoreElements();e = fileList.nextElement()) {
-            Logger.getLogger("NexT").log(Level.INFO,"[NexT][Toolkit] Expanding " + e.getName());
-            // If the zip entry is a directory, make the directory.
-            if (e.isDirectory()) new File(where,e.getName()).mkdir();
-            else {
-                InputStream in = archive.getInputStream(e);
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(where,e.getName())));
+        ZipFile zipFile = new ZipFile(filename);
+        Enumeration files = zipFile.entries();
+        FileOutputStream fos = null;
+
+        while (files.hasMoreElements()) {
+            try {
+                ZipEntry entry = (ZipEntry) files.nextElement();
+                InputStream eis = zipFile.getInputStream(entry);
                 byte[] buffer = new byte[1024];
-                int len;
-                while((len = in.read(buffer)) >= 0)
-                    out.write(buffer, 0, len);
+                int bytesRead = 0;
 
-                in.close();
-                out.close();
+                File f = new File(where,entry.getName());
 
+                if (entry.isDirectory()) {
+                    f.mkdirs();
+                    continue;
+                } else {
+                    f.getParentFile().mkdirs();
+                    f.createNewFile();
+                }
+
+                fos = new FileOutputStream(f);
+
+                while ((bytesRead = eis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to unzip data.",e);continue;
+            } finally {
+                if (fos != null) 
+                    try {fos.close();} catch (IOException e) {Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to read archive.",e);}
             }
         }
         return true;

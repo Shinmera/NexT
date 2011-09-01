@@ -20,6 +20,7 @@ public class Package {
     public Package(Repository repo,String name){
         try {
             url = new URL(repo.getURL(),name);
+            info.put("name", name);
         } catch (MalformedURLException ex) {
             Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Package] URL malformed.", ex);
         }
@@ -29,22 +30,26 @@ public class Package {
         this.url=url;
     }
 
-    public void getPackageInfo(){
+    public boolean getPackageInfo(){
         try {
-            info = Toolkit.stringToMap(Toolkit.downloadFileToString(new URL(url, "index")),"\n",":");
+            String s = Toolkit.downloadFileToString(new URL(url, info.get("name")+"/index"));
+            info = Toolkit.stringToMap(s,"\n",":");
             if(info.containsKey("dep"))dependencies = info.get("dep").split(";");
             else dependencies = new String[0];
             gotInfo=true;
         } catch (MalformedURLException ex) {
             Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Package] URL malformed.", ex);
+            return false;
         }
+        return true;
     }
 
     public boolean downloadPackage(){
-        if(!gotInfo)getPackageInfo();
+        if(!gotInfo){if(!getPackageInfo())return false;}
         try {
+            Logger.getLogger("NexT").info("[NexT][Package] GET "+info.get("name")+" << "+new URL(url, info.get("name")+"/pack.zip"));
             tmpfile = new File(new File(System.getProperty("java.io.tmpdir")),info.get("name"));
-            gotPackage = Toolkit.downloadFile(new URL(url, "pack.zip"), tmpfile);
+            gotPackage = Toolkit.downloadFile(new URL(url, info.get("name")+"/pack.zip"), tmpfile);
         } catch (MalformedURLException ex) {
             Logger.getLogger("NexT").log(Level.SEVERE, "[NexT][Package] URL malformed.", ex);
             return false;
@@ -53,8 +58,9 @@ public class Package {
     }
 
     public boolean installPackage(File location){
-        if(!gotPackage)downloadPackage();
+        if(!gotPackage){if(!downloadPackage())return false;}
         try {
+            Logger.getLogger("NexT").info("[NexT][Package] PUT "+info.get("name")+" >> "+location.getAbsolutePath());
             return Toolkit.unzipFile(tmpfile, location);
         } catch (IOException ex) {
             Logger.getLogger("NexT").log(Level.SEVERE, "[NexT][Package] IO Exception while unzipping.", ex);
