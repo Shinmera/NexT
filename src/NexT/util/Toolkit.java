@@ -13,11 +13,13 @@ import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -148,18 +150,15 @@ public final class Toolkit {
 
     /**
      * Tries to download the specified File and save it to disc.
-     * This produces a ProgressThread which can be used to watch the download progress.
      * 
      * @param url_str The URL to download the file from.
      * @param saveFile The File to save it to.
-     * @return ProgressThread instance to watch the download Progress.
-     * @see ProgressThread
+     * @return true for success
      */
-    public static boolean downloadFile(String url_str, File saveFile){
+    public static boolean downloadFile(URL url_str, File saveFile){
         try{
-        BufferedInputStream in = new java.io.BufferedInputStream(new
-
-        URL(url_str).openStream());
+        BufferedInputStream in = new java.io.BufferedInputStream(
+                url_str.openStream());
         FileOutputStream fos = new FileOutputStream(saveFile);
         BufferedOutputStream bout = new BufferedOutputStream(fos,1024);
         byte[] data = new byte[1024];
@@ -173,29 +172,38 @@ public final class Toolkit {
 	return true;
     }
 
+
+    public static String downloadFileToString(URL url_str){
+        try{
+            StringBuilder s = new StringBuilder();
+            String temp;
+            BufferedReader br = new BufferedReader(new InputStreamReader(url_str.openStream()));
+            while ((temp = br.readLine()) != null) {
+                s.append(temp+"\n");
+            }
+            return s.toString();
+        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);}
+        return "";
+    }
+
     /**
      * Tries to unzip the specified archive.
-     * This produces a ProgressThread which can be used to watch the extracting progress.
      *
      * @param filename The path to the archive that is to be unzipped.
      * @param where Where to extract the contents to.
-     * @return ProgressThread instance to watch the unzipping Progress.
-     * @see ProgressThread
+     * @return success boolean.
      */
-    public static boolean unzipFile(final String filename,final String where) throws IOException{
-        if(!new File(filename).canRead()){Logger.getAnonymousLogger().log(Level.SEVERE, "Can't read source zip!\n"+filename);return false;}
-        if(!new File(filename).getParentFile().setWritable(true)){Logger.getAnonymousLogger().log(Level.SEVERE, "Can't write to parent!\n"+new File(filename).getParent());return false;}
-
+    public static boolean unzipFile(File filename,File where) throws IOException{
         ZipFile archive = new ZipFile(filename);
         Enumeration<? extends ZipEntry> fileList = archive.entries();
         // Go through each file in the ZIP archive.
         for (ZipEntry e = fileList.nextElement();fileList.hasMoreElements();e = fileList.nextElement()) {
-            Logger.getAnonymousLogger().log(Level.INFO,"Expanding " + e.getName());
+            Logger.getLogger("NexT").log(Level.INFO,"[NexT][Toolkit] Expanding " + e.getName());
             // If the zip entry is a directory, make the directory.
-            if (e.isDirectory()) new File(where+e.getName()).mkdir();
+            if (e.isDirectory()) new File(where,e.getName()).mkdir();
             else {
                 InputStream in = archive.getInputStream(e);
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(where+e.getName()));
+                OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(where,e.getName())));
                 byte[] buffer = new byte[1024];
                 int len;
                 while((len = in.read(buffer)) >= 0)
