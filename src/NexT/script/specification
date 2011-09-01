@@ -1,11 +1,9 @@
 #NexT/script                                                                    This line is essential, it defines the script header. Files without it won't load.
-int a                                                                           Uninitialized int var.
-double b = 0.5                                                                  Initialized double var.
-string c = "oh man"                                                             Initialized string var.
-boolean d = true                                                                Initialized boolean var.
+lol = 5                                                                         Variables need no initialization or specification. Automatically parsed.
+string = "string"                                                               Strings need to be encapsed in quotation marks.
 
 defun testFunction{                                                             Function definition. Defun keyword, followed by function name. No argument definition.
-    int a = 10                                                                  Local scope variables hide global ones.
+    a = 10                                                                      Local scope variables hide global ones.
     b = (+ $0 5 (randomInt -100 100 ) (sin (/ a 10 ) ) )                        Math expressions follow LISP syntax and can call other functions.
     if a >= b {                                                                 If statements support the following comparisons: <,>,==,<=,>=,!=
         return a                                                                Return statements are an immediate function exit point.

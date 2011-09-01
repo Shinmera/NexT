@@ -93,16 +93,19 @@ public class Math {
                 if(args.size()>0)throw new InvalidArgumentCountException();
                 result=random();
         }else{
-                if(vars.containsKey(op))return Double.parseDouble(vars.get(expression));
-                if(CONST.containsKey(op))return CONST.get(expression);
+                if(vars.containsKey(op))return Double.parseDouble(vars.get(op));
+                if(CONST.containsKey(op))return CONST.get(op);
                 if(script.hasFunction(op)){
                     HashMap<String,String> tmp = vars;
-                    for(int i=0;i<args.size();i++)tmp.put("$"+i, args.get(i));
-                    return Double.parseDouble(script.eval(expression,tmp));
+                    for(int i=0;i<args.size();i++){
+                        if(args.get(i).startsWith("$"))args.set(i,vars.get(args.get(i)));
+                        tmp.put("$"+i, args.get(i));
+                    }
+                    return Double.parseDouble(script.eval(op,tmp));
                 }
+                if(Toolkit.isNumeric(expression))return Double.parseDouble(expression);
                 throw new MissingOperandException();
         }
-        System.out.println(">>"+result);
         return result;
     }
 
