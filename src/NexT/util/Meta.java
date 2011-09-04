@@ -10,7 +10,7 @@ package NexT.util;
 \**********************/
 
 public class Meta {
-    public static final String version = "V1.5b";
+    public static final String version = "V3.1";
     public static final String developers = "Shinmera";
     public static final int OS_WEIRD = -1;
     public static final int OS_LINUX = 0;

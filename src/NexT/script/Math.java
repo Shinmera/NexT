@@ -9,7 +9,6 @@
 
 package NexT.script;
 
-import NexT.script.Script;
 import NexT.err.InvalidArgumentCountException;
 import NexT.err.MissingOperandException;
 import NexT.util.Toolkit;
@@ -41,9 +40,9 @@ public class Math {
         parseExpression("(* 2 3 )",null,null);
     }
 
-    public static double parseExpression(String expression,HashMap<String,String> vars,Script script) throws MissingOperandException, InvalidArgumentCountException{
+    public static double parseExpression(String expression,HashMap<String,Var> vars,Script script) throws MissingOperandException, InvalidArgumentCountException{
         if(expression.startsWith("("))expression=expression.substring(1,expression.length()-1);
-        if(vars==null)vars = new HashMap<String,String>();
+        if(vars==null)vars = new HashMap<String,Var>();
         if(script==null)script = new Script();
         
         ArrayList<String> args = getArguments(expression);
@@ -93,15 +92,15 @@ public class Math {
                 if(args.size()>0)throw new InvalidArgumentCountException();
                 result=random();
         }else{
-                if(vars.containsKey(op))return Double.parseDouble(vars.get(op));
+                if(vars.containsKey(op))return (Double)vars.get(op).get();
                 if(CONST.containsKey(op))return CONST.get(op);
                 if(script.hasFunction(op)){
-                    HashMap<String,String> tmp = vars;
+                    HashMap<String,Var> tmp = vars;
                     for(int i=0;i<args.size();i++){
-                        if(args.get(i).startsWith("$"))args.set(i,vars.get(args.get(i)));
-                        tmp.put("$"+i, args.get(i));
+                        if(args.get(i).startsWith("$"))args.set(i,vars.get(args.get(i)).get().toString());
+                        tmp.put("$"+i, new Var(args.get(i)));
                     }
-                    return Double.parseDouble(script.eval(op,tmp));
+                    return (Double)script.eval(op,tmp).get();
                 }
                 if(Toolkit.isNumeric(expression))return Double.parseDouble(expression);
                 throw new MissingOperandException();
@@ -109,7 +108,7 @@ public class Math {
         return result;
     }
 
-    private static double passToParser(int n,ArrayList<String> args,HashMap<String,String> vars,Script script) throws MissingOperandException, InvalidArgumentCountException{
+    private static double passToParser(int n,ArrayList<String> args,HashMap<String,Var> vars,Script script) throws MissingOperandException, InvalidArgumentCountException{
         if(!Toolkit.isNumeric(args.get(n)))return parseExpression(args.get(n),vars,script);
         else return Double.parseDouble(args.get(n));
     }

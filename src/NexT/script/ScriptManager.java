@@ -23,18 +23,28 @@ public class ScriptManager {
     public ScriptManager(){}
 
     public boolean loadScript(File f){
+        return loadScript(f,true);
+    }
+
+    public boolean loadScript(File f,boolean time){
         Script script = new Script();
         if(!script.loadScript(f))return false;
 
         scripts.put(f.getName().substring(0,f.getName().indexOf(".")), script);
-        //add watch for automatic reload
-        TimerTask task = new FileWatcher(f);
-        timer.schedule(task , new Date(), 500);
+        if(time){
+            //add watch for automatic reload
+            TimerTask task = new FileWatcher(f);
+            timer.schedule(task , new Date(), 500);
+        }
         return true;
     }
 
     public Script getScript(String name){return scripts.get(name);}
     public Script getScript(int n){return scripts.getAt(n);}
+    public Script get(String name){return scripts.get(name);}
+    public Script get(int n){return scripts.getAt(n);}
+    public Script s(String name){return scripts.get(name);}
+    public Script s(int n){return scripts.getAt(n);}
     public void delScript(String name){scripts.remove(name);}
     public void delScript(int n){scripts.removeAt(n);}
     public void clear(){scripts.clear();}
@@ -59,7 +69,7 @@ public class ScriptManager {
 
         public void onChange( File file ){
             Logger.getLogger("NexT").info("[NexT][ScriptManager] Automatically reloading script '"+file.getName()+"'");
-            loadScript(file);
+            loadScript(file,false);
         }
     }
 }

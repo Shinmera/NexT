@@ -22,7 +22,7 @@ import javax.swing.JFileChooser;
 
 public class Script {
     private HashMap<String,Function> funcs = new HashMap<String,Function>();
-    private HashMap<String,String> vars = new HashMap<String,String>();
+    private HashMap<String,Var> vars = new HashMap<String,Var>();
     private File script;
 
     public Script(){
@@ -82,7 +82,7 @@ public class Script {
                         //Variable
                         String key = contents[i].split("=")[0];
                         String val = contents[i].split("=")[1];
-                        vars.put(key.trim(), val.trim());
+                        vars.put(key.trim(), new Var(val.trim()));
                     }
                 }
             }
@@ -92,16 +92,20 @@ public class Script {
 
     public Set<String> getFunctions(){return funcs.keySet();}
     public Function getFunction(String name){return funcs.get(name);}
-    public String getVariable(String name){return vars.get(name);}
+    public Function getF(String name){return funcs.get(name);}
+    public Function f(String name){return funcs.get(name);}
+    public Var getVariable(String name){return vars.get(name);}
+    public Var getV(String name){return vars.get(name);}
+    public Var v(String name){return vars.get(name);}
     public void setFunction(String name,Function f){funcs.put(name,f);}
-    public void setVariable(String name,String v){vars.put(name,v);}
+    public void setVariable(String name,Var v){vars.put(name,v);}
     public boolean hasFunction(String name){return funcs.containsKey(name);}
 
-    public String eval(String func,HashMap<String,String> args){
-        if(args==null)args = new HashMap<String,String>();
+    public Var eval(String func,HashMap<String,Var> args){
+        if(args==null)args = new HashMap<String,Var>();
         try{return funcs.get(func).exec(args);
         }catch(Exception ex){Logger.getLogger("NexT").log(Level.SEVERE,"[NexT][Script][Function] Error while running function '"+func+"' on line "+funcs.get(func).getCurrentLine(),ex);}
-        return "";
+        return new Var(Var.TYPE_STRING);
     }
 
     public class Function{
@@ -126,32 +130,25 @@ public class Script {
             return true;
         }
 
-        public HashMap<String,String> allVars(HashMap<String,String> locals){
-            HashMap<String,String> temp = locals;temp.putAll(vars);
+        public HashMap<String,Var> allVars(HashMap<String,Var> locals){
+            HashMap<String,Var> temp = locals;temp.putAll(vars);
             return temp;
         }
 
-        public String exec(HashMap<String,String> args) throws MissingOperandException, InvalidArgumentCountException{
+        public Var exec(HashMap<String,Var> args) throws MissingOperandException, InvalidArgumentCountException{
             int inBlock=0;String expression="";
-            IfExpression ifexpr = new IfExpression(script);
+            IfExpression ifexpr = new IfExpression();
             Function func = new Function(script);
             StringBuilder trueBlock = new StringBuilder();
             StringBuilder elseBlock = new StringBuilder();
-            HashMap<String,String> locals = args;
+            HashMap<String,Var> locals = args;
             for(int i=0;i<contents.length;i++){
                 if(inBlock==0){
                     if(contents[i].startsWith("return")){
-                        if(contents[i].contains("(")){
-                            return NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("(")+1,contents[i].length()-2).trim(), allVars(locals), script)+"";
-                        }else{
-                            String ret = contents[i].substring(7);
-                            if(locals.containsKey(ret))return locals.get(ret);
-                            if(vars.containsKey(ret))return locals.get(ret);
-                            throw new MissingOperandException();
-                        }
+                        return new Var(Var.TYPE_DOUBLE,NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("return")+6).trim(), allVars(locals), script)+"");
                     }else
                     if(contents[i].startsWith("if")){
-                        expression = contents[i].substring(3,contents[i].indexOf("{")).trim();
+                        expression = contents[i].substring(contents[i].indexOf("if")+2,contents[i].indexOf("{")).trim();
                         inBlock=1;
                     }else
                     if(contents[i].contains("=")){
@@ -159,8 +156,8 @@ public class Script {
                         String value="";
                         if(contents[i].contains("\""))value=contents[i].substring(contents[i].indexOf("\"")+1,contents[i].length()-2);
                         else value=""+NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("=")+1,contents[i].length()).trim(), allVars(locals), script);
-                        if(locals.containsKey(key)||!vars.containsKey(key))vars.put(key,value);
-                        else vars.put(key, value);
+                        if(locals.containsKey(key)||!vars.containsKey(key))vars.put(key,new Var(value));
+                        else vars.put(key, new Var(value));
                     }else{
                         NexT.script.Math.parseExpression(contents[i],allVars(locals),script);
                     }
@@ -174,21 +171,21 @@ public class Script {
                     else elseBlock.append(contents[i]).append("\n");
                 }
                 if(inBlock==-1){
-                    String ret = "";
-                    if(ifexpr.eval(expression, allVars(locals))){
+                    Var ret = new Var(Var.TYPE_DOUBLE);
+                    if(ifexpr.eval(expression, allVars(locals),script)){
                         func.loadFunction(trueBlock.toString());
                         ret = func.exec(allVars(locals));
                     }else if(elseBlock.toString().length() != 0){
                         func.loadFunction(elseBlock.toString());
                         ret = func.exec(allVars(locals));
                     }
-                    if(ret.length() !=0)return ret;
+                    if(ret.toString().length() !=0)return ret;
                     trueBlock = new StringBuilder();
                     elseBlock = new StringBuilder();
                     inBlock=0;
                 }
             }
-            return "";
+            return new Var(Var.TYPE_STRING);
         }
     }
 
@@ -199,20 +196,16 @@ public class Script {
         public final String EXPR_NOT_EQUAL = "!=";
         public final String EXPR_GREATER_OR_EQUAL = ">=";
         public final String EXPR_SMALLER_OR_EQUAL = "<=";
-        Script script;
-        
-        public IfExpression(Script script){
-            this.script=script;
-        }
 
-        public boolean eval(String expression,HashMap<String,String> arg){
+        public IfExpression(){}
+
+        public boolean eval(String expression,HashMap<String,Var> var,Script script){
             ArrayList<String> args = NexT.script.Math.getArguments("- "+expression.trim());//bogus operator to abuse the arguments function
-            HashMap<String,String> var = vars;var.putAll(arg);//merge arguments and local variables for the maths parser.
             try{
-            if(args.get(1).equals(EXPR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) == NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_NOT_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) != NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_SMALLER)){if(NexT.script.Math.parseExpression(args.get(0), var, script) < NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_GREATER)){if(NexT.script.Math.parseExpression(args.get(0), var, script) > NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
+            if(args.get(1).equals(EXPR_EQUAL)){           if(NexT.script.Math.parseExpression(args.get(0), var, script) == NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
+            if(args.get(1).equals(EXPR_NOT_EQUAL)){       if(NexT.script.Math.parseExpression(args.get(0), var, script) != NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
+            if(args.get(1).equals(EXPR_SMALLER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script) <  NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
+            if(args.get(1).equals(EXPR_GREATER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script) >  NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
             if(args.get(1).equals(EXPR_SMALLER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) <= NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
             if(args.get(1).equals(EXPR_GREATER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) >= NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
             }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Script][IfExpression] Failed to evaluate!",e);return false;}

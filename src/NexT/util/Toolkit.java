@@ -342,6 +342,24 @@ public final class Toolkit {
         return C;
     }
 
+    public static int[] stringToIntArray(String[] a){
+        int[] b = new int[a.length];
+        for(int i=0;i<a.length;i++)b[i]=Integer.parseInt(a[i]);
+        return b;
+    }
+
+    public static double[] stringToDoubleArray(String[] a){
+        double[] b = new double[a.length];
+        for(int i=0;i<a.length;i++)b[i]=Double.parseDouble(a[i]);
+        return b;
+    }
+
+    public static boolean[] stringToBoolArray(String[] a){
+        boolean[] b = new boolean[a.length];
+        for(int i=0;i<a.length;i++)b[i]=Boolean.parseBoolean(a[i]);
+        return b;
+    }
+
     /**
      * Makes a number positive.
      * @param d a number
