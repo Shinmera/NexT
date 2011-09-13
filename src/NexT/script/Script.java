@@ -172,7 +172,8 @@ public class Script {
                 }
                 if(inBlock==-1){
                     Var ret = new Var(Var.TYPE_DOUBLE);
-                    if(ifexpr.eval(expression, allVars(locals),script)){
+                    boolean valid = ifexpr.eval(expression, allVars(locals),script);
+                    if(valid){
                         func.loadFunction(trueBlock.toString());
                         ret = func.exec(allVars(locals));
                     }else if(elseBlock.toString().length() != 0){

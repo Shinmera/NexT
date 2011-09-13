@@ -21,7 +21,6 @@ public class ScriptManager {
     private Timer timer = new Timer();
 
     public ScriptManager(){}
-
     public boolean loadScript(File f){
         return loadScript(f,true);
     }

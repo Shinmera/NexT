@@ -9,6 +9,7 @@
 
 package NexT.script;
 
+import java.util.logging.Logger;
 import NexT.err.InvalidArgumentCountException;
 import NexT.err.MissingOperandException;
 import NexT.util.Toolkit;
@@ -92,9 +93,9 @@ public class Math {
                 if(args.size()>0)throw new InvalidArgumentCountException();
                 result=random();
         }else{
-                if(vars.containsKey(op))return (Double)vars.get(op).get();
-                if(CONST.containsKey(op))return CONST.get(op);
-                if(script.hasFunction(op)){
+                if(vars.containsKey(op))result=(Double)vars.get(op).get();
+                else if(CONST.containsKey(op))result = CONST.get(op);
+                else if(script.hasFunction(op)){
                     HashMap<String,Var> tmp = vars;
                     for(int i=0;i<args.size();i++){
                         if(args.get(i).startsWith("$"))args.set(i,vars.get(args.get(i)).get().toString());
@@ -102,8 +103,8 @@ public class Math {
                     }
                     return (Double)script.eval(op,tmp).get();
                 }
-                if(Toolkit.isNumeric(expression))return Double.parseDouble(expression);
-                throw new MissingOperandException();
+                else if(Toolkit.isNumeric(expression))result = Double.parseDouble(expression);
+                else throw new MissingOperandException();
         }
         return result;
     }
