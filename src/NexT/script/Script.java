@@ -156,7 +156,9 @@ public class Script {
                         String value="";
                         if(contents[i].contains("\""))value=contents[i].substring(contents[i].indexOf("\"")+1,contents[i].length()-2);
                         else value=""+NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("=")+1,contents[i].length()).trim(), allVars(locals), script);
-                        if(locals.containsKey(key)||!vars.containsKey(key))vars.put(key,new Var(value));
+
+                        if(key.startsWith("_"))vars.put(key.substring(1), new Var(value));
+                        else if(locals.containsKey(key)||!vars.containsKey(key))locals.put(key,new Var(value));
                         else vars.put(key, new Var(value));
                     }else{
                         NexT.script.Math.parseExpression(contents[i],allVars(locals),script);

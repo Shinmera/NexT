@@ -9,4 +9,7 @@
 
 package NexT.err;
 
-public class MissingOperandException extends Exception{}
+public class MissingOperandException extends Exception{
+    public MissingOperandException(){}
+    public MissingOperandException(String s){super(s);}
+}

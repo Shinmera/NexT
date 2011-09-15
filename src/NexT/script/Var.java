@@ -86,6 +86,8 @@ public class Var {
         }
     }
 
+    public int getType(){return type;}
+
     public String toString(){
         return get()+"";
     }

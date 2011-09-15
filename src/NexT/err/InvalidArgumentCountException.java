@@ -9,4 +9,7 @@
 
 package NexT.err;
 
-public class InvalidArgumentCountException extends Exception{}
+public class InvalidArgumentCountException extends Exception{
+    public InvalidArgumentCountException(){}
+    public InvalidArgumentCountException(String s){super(s);}
+}

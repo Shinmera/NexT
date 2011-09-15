@@ -9,4 +9,7 @@
 
 package NexT.err;
 
-public class UnbalancedBracketException extends Exception{}
+public class UnbalancedBracketException extends Exception{
+    public UnbalancedBracketException(){}
+    public UnbalancedBracketException(String s){super(s);}
+}

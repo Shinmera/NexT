@@ -29,6 +29,7 @@ public class Math {
     public static final String OP_COS = "cos";
     public static final String OP_TAN = "tan";
     public static final String OP_RAN = "rand";
+    public static final String OP_ARR = "<";
 
     public static final HashMap<String,Double> CONST = new HashMap<String,Double>();
 
@@ -92,6 +93,25 @@ public class Math {
         } else if (op.equals(OP_RAN)) {
                 if(args.size()>0)throw new InvalidArgumentCountException();
                 result=random();
+        } else if (op.equals(OP_ARR)) {
+                if(args.size()!=2)throw new InvalidArgumentCountException();
+                int pos = (int)passToParser(1,args,vars,script);
+                if(vars.containsKey(args.get(0))){
+                    Var array = vars.get(args.get(0));
+                    switch(array.getType()){
+                        case Var.TYPE_BOOLEAN_ARRAY:
+                            result=((boolean[])array.get())[pos] ? 1 : 0;
+                            break;
+                        case Var.TYPE_DOUBLE_ARRAY:
+                            result=((double[])array.get())[pos];
+                            break;
+                        case Var.TYPE_INTEGER_ARRAY:
+                            result=((int[])array.get())[pos];
+                            break;
+                        default:
+                            throw new InvalidArgumentCountException("Variable '"+args.get(0)+"' has an invalid type!");
+                    }
+                }else throw new InvalidArgumentCountException("Variable '"+args.get(0)+"' not found!");
         }else{
                 if(vars.containsKey(op))result=(Double)vars.get(op).get();
                 else if(CONST.containsKey(op))result = CONST.get(op);
@@ -104,7 +124,7 @@ public class Math {
                     return (Double)script.eval(op,tmp).get();
                 }
                 else if(Toolkit.isNumeric(expression))result = Double.parseDouble(expression);
-                else throw new MissingOperandException();
+                else throw new MissingOperandException("Couldn't parse value '"+op+"'!");
         }
         return result;
     }
