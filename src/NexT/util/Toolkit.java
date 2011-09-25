@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -427,7 +429,7 @@ public final class Toolkit {
             pw.flush();
             pw.close();
         }catch(IOException e){
-            e.printStackTrace();
+            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to save String to file.",e);
             return false;
         }
         return true;
@@ -446,10 +448,213 @@ public final class Toolkit {
             while ((read = in.readLine()) != null)s.append(read+"\n");
             in.close();
         }catch(IOException e){
-            e.printStackTrace();
+            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to load file to String.",e);
             return "";
         }
         return s.toString();
+    }
+
+    /**
+     * Converts a byte array into a String.
+     * @param data The byte array to convert.
+     * @return The converted String.
+     */
+    private static String convertToHex(byte[] data) {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < data.length; i++) {
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                if ((0 <= halfbyte) && (halfbyte <= 9))
+                    buf.append((char) ('0' + halfbyte));
+                else
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            } while(two_halfs++ < 1);
+        }
+        return buf.toString();
+    }
+
+    /**
+     * Converts a text into it's SHA-1 hash. Returns the text on failure.
+     * @param text The text to hash.
+     * @return The SHA-1 hash.
+     */
+    public static String SHA1(String text) {
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] sha1hash = new byte[40];
+            md.update(text.getBytes("iso-8859-1"), 0, text.length());
+            sha1hash = md.digest();
+            return convertToHex(sha1hash);
+        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to create SHA-1 hash.",e);}
+        return text;
+    }
+
+    /**
+     * Inserts an element into an array.
+     * @param array The array to insert into
+     * @param pos The position to insert at.
+     * @param insert The value to insert.
+     * @return The new array.
+     */
+    public static int[] insertIntoArray(int[] array,int pos,int insert){
+        int[] a = new int[array.length+1];boolean passed=false;
+        for(int i=0;i<array.length;i++){
+            if(i==pos){
+                a[i]=insert;i++;
+                passed=true;
+            }
+            if(passed)a[i]=array[i];
+            else      a[i]=array[i-1];
+        }
+        return a;
+    }
+
+    /**
+     * Inserts an element into an array.
+     * @param array The array to insert into
+     * @param pos The position to insert at.
+     * @param insert The value to insert.
+     * @return The new array.
+     */
+    public static double[] insertIntoArray(double[] array,int pos,double insert){
+        double[] a = new double[array.length+1];boolean passed=false;
+        for(int i=0;i<array.length;i++){
+            if(i==pos){
+                a[i]=insert;i++;
+                passed=true;
+            }
+            if(passed)a[i]=array[i];
+            else      a[i]=array[i-1];
+        }
+        return a;
+    }
+
+    /**
+     * Inserts an element into an array.
+     * @param array The array to insert into
+     * @param pos The position to insert at.
+     * @param insert The value to insert.
+     * @return The new array.
+     */
+    public static boolean[] insertIntoArray(boolean[] array,int pos,boolean insert){
+        boolean[] a = new boolean[array.length+1];boolean passed=false;
+        for(int i=0;i<array.length;i++){
+            if(i==pos){
+                a[i]=insert;i++;
+                passed=true;
+            }
+            if(passed)a[i]=array[i];
+            else      a[i]=array[i-1];
+        }
+        return a;
+    }
+
+    /**
+     * Inserts an element into an array.
+     * @param array The array to insert into
+     * @param pos The position to insert at.
+     * @param insert The value to insert.
+     * @return The new array.
+     */
+    public static String[] insertIntoArray(String[] array,int pos,String insert){
+        String[] a = new String[array.length+1];boolean passed=false;
+        for(int i=0;i<array.length;i++){
+            if(i==pos){
+                a[i]=insert;i++;
+                passed=true;
+            }
+            if(passed)a[i]=array[i];
+            else      a[i]=array[i-1];
+        }
+        return a;
+    }
+
+    /**
+     * Inserts an element into an array.
+     * @param array The array to insert into
+     * @param pos The position to insert at.
+     * @param insert The value to insert.
+     * @return The new array.
+     */
+    public static Object[] insertIntoArray(Object[] array,int pos,Object insert){
+        Object[] a = new Object[array.length+1];boolean passed=false;
+        for(int i=0;i<array.length;i++){
+            if(i==pos){
+                a[i]=insert;i++;
+                passed=true;
+            }
+            if(passed)a[i]=array[i];
+            else      a[i]=array[i-1];
+        }
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(int[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Integer)arr[i];}
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(double[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Double)arr[i];}
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(boolean[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Boolean)arr[i];}
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(float[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Float)arr[i];}
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(char[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Character)arr[i];}
+        return a;
+    }
+
+    /**
+     * Converts a primitive type array to an object array.
+     * @param arr The primitive array.
+     * @return The new Object array.
+     */
+    public static Object[] toObjectArray(short[] arr){
+        Object[] a = new Object[arr.length];
+        for(int i=0;i<arr.length;i++){a[i]=(Short)arr[i];}
+        return a;
     }
 
 }

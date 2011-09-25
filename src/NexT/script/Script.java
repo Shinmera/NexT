@@ -47,8 +47,8 @@ public class Script {
         for(int i=1;i<contents.length;i++){
                 if(contents[i].contains("#"))contents[i] = contents[i].substring(0,contents[i].indexOf("#"));
                 if(contents[i].contains("//"))contents[i] = contents[i].substring(0,contents[i].indexOf("//"));
-                if(contents[i].contains("/*"))skip = true;
-                if(contents[i].contains("*/"))skip = false;
+                if(contents[i].contains("/*")){skip = true; contents[i]="";}
+                if(contents[i].contains("*/")){skip = false;contents[i]="";}
                 contents[i] = contents[i].trim();
 
                 if(!skip&&contents[i].length() != 0){
@@ -80,9 +80,9 @@ public class Script {
                         }
                     }else if(contents[i].length() != 0){
                         //Variable
-                        String key = contents[i].split("=")[0];
-                        String val = contents[i].split("=")[1];
-                        vars.put(key.trim(), new Var(val.trim()));
+                        try{
+                            handleVarSet(contents[i],null);
+                        }catch(Exception ex){Logger.getLogger("NexT").log(Level.WARNING,"[Script] Failed to parse line "+i+"!",ex);}
                     }
                 }
             }
@@ -100,6 +100,57 @@ public class Script {
     public void setFunction(String name,Function f){funcs.put(name,f);}
     public void setVariable(String name,Var v){vars.put(name,v);}
     public boolean hasFunction(String name){return funcs.containsKey(name);}
+
+    public HashMap<String,Var> handleVarSet(String line,HashMap<String,Var> locals) throws MissingOperandException, InvalidArgumentCountException{
+        String key = line.substring(0,line.indexOf("=")).trim();
+        Var value = NexT.script.Math.parseExpression(line.substring(line.indexOf("=")+1).trim(), allVars(locals), this);
+        if(key.contains("[")){
+            int pos = Integer.parseInt(key.substring(key.indexOf("[")+1,key.indexOf("]")));
+            key=key.substring(0,key.indexOf("["));Var arr;
+
+            if((key.startsWith("_")||locals==null)&&vars.containsKey(key)){
+                arr = vars.get(key.substring(1));
+            }else if(locals.containsKey(key)){
+                arr = locals.get(key);
+            }else throw new MissingOperandException("Can't access array "+key+"!");
+            
+            switch(arr.getType()){
+                case Var.TYPE_BOOLEAN_ARRAY:
+                    boolean[] barray = (boolean[])arr.get();
+                    barray[pos]=(Boolean)value.get();
+                    value = new Var("{"+Toolkit.implode(Toolkit.toObjectArray(barray), ",")+"}");
+                    break;
+                case Var.TYPE_DOUBLE_ARRAY:
+                    double[] darray = (double[])arr.get();
+                    darray[pos]=(Double)value.get();
+                    value = new Var("{"+Toolkit.implode(Toolkit.toObjectArray(darray), ",")+"}");
+                    break;
+                case Var.TYPE_INTEGER_ARRAY:
+                    int[] iarray = (int[])arr.get();
+                    iarray[pos]=(Integer)value.get();
+                    value = new Var("{"+Toolkit.implode(Toolkit.toObjectArray(iarray), ",")+"}");
+                    break;
+                case Var.TYPE_STRING_ARRAY:
+                    String[] sarray = (String[])arr.get();
+                    sarray[pos]=(String)value.get();
+                    value = new Var("{"+Toolkit.implode(sarray, ",")+"}");
+                    break;
+                default: throw new MissingOperandException("Invalid variable type for "+key+"!");
+            }
+        }
+
+        if(key.startsWith("_"))vars.put(key.substring(1),value);
+        else if((locals!=null)&&(locals.containsKey(key)||!vars.containsKey(key)))locals.put(key,value);
+        else vars.put(key,value);
+
+        return locals;
+    }
+
+    public HashMap<String,Var> allVars(HashMap<String,Var> locals){
+        HashMap<String,Var> temp = vars;
+        if(locals!=null)temp.putAll(locals);
+        return temp;
+    }
 
     public Var eval(String func,HashMap<String,Var> args){
         if(args==null)args = new HashMap<String,Var>();
@@ -130,13 +181,8 @@ public class Script {
             return true;
         }
 
-        public HashMap<String,Var> allVars(HashMap<String,Var> locals){
-            HashMap<String,Var> temp = locals;temp.putAll(vars);
-            return temp;
-        }
-
         public Var exec(HashMap<String,Var> args) throws MissingOperandException, InvalidArgumentCountException{
-            int inBlock=0;String expression="";
+            int inBlock=0;int blockcount=0;String expression="";
             IfExpression ifexpr = new IfExpression();
             Function func = new Function(script);
             StringBuilder trueBlock = new StringBuilder();
@@ -145,35 +191,46 @@ public class Script {
             for(int i=0;i<contents.length;i++){
                 if(inBlock==0){
                     if(contents[i].startsWith("return")){
-                        return new Var(Var.TYPE_DOUBLE,NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("return")+6).trim(), allVars(locals), script)+"");
+                        return NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("return")+6).trim(), allVars(locals), script);
                     }else
                     if(contents[i].startsWith("if")){
                         expression = contents[i].substring(contents[i].indexOf("if")+2,contents[i].indexOf("{")).trim();
-                        inBlock=1;
+                        inBlock=1;blockcount=0;i++;
                     }else
                     if(contents[i].contains("=")){
-                        String key = contents[i].substring(0,contents[i].indexOf("=")).trim();
-                        String value="";
-                        if(contents[i].contains("\""))value=contents[i].substring(contents[i].indexOf("\"")+1,contents[i].length()-2);
-                        else value=""+NexT.script.Math.parseExpression(contents[i].substring(contents[i].indexOf("=")+1,contents[i].length()).trim(), allVars(locals), script);
-
-                        if(key.startsWith("_"))vars.put(key.substring(1), new Var(value));
-                        else if(locals.containsKey(key)||!vars.containsKey(key))locals.put(key,new Var(value));
-                        else vars.put(key, new Var(value));
+                        locals = handleVarSet(contents[i],locals);
+                    }else
+                    if(contents[i].startsWith("print")){
+                        System.out.println("[FUNC]["+i+"]>>"+contents[i].substring(5).trim());
                     }else{
                         NexT.script.Math.parseExpression(contents[i],allVars(locals),script);
                     }
-                }else if(inBlock==1){
-                    if(contents[i].contains("else")){inBlock=2;contents[i]="";}
-                    else if(contents[i].contains("}"))inBlock = -1;
-                    else trueBlock.append(contents[i]).append("\n");
+                }
+                if(inBlock==1){
+                    if(blockcount==0){
+                        if(contents[i].contains("else")){inBlock=2;contents[i]="";}
+                        else if(contents[i].contains("}"))inBlock = -1;
+                        else trueBlock.append(contents[i]).append("\n");
+                        if(contents[i].contains("{"))blockcount++;
+                    }else{
+                        if(contents[i].contains("{"))blockcount++;
+                        if(contents[i].contains("}"))blockcount--;
+                        trueBlock.append(contents[i]).append("\n");
+                    }
                 }
                 if(inBlock==2){
-                    if(contents[i].contains("}"))inBlock = -1;
-                    else elseBlock.append(contents[i]).append("\n");
+                    if(blockcount==0){
+                        if(contents[i].contains("}"))inBlock = -1;
+                        else elseBlock.append(contents[i]).append("\n");
+                        if(contents[i].contains("{"))blockcount++;
+                    }else{
+                        if(contents[i].contains("{"))blockcount++;
+                        if(contents[i].contains("}"))blockcount--;
+                        elseBlock.append(contents[i]).append("\n");
+                    }
                 }
                 if(inBlock==-1){
-                    Var ret = new Var(Var.TYPE_DOUBLE);
+                    Var ret = new Var();
                     boolean valid = ifexpr.eval(expression, allVars(locals),script);
                     if(valid){
                         func.loadFunction(trueBlock.toString());
@@ -182,13 +239,13 @@ public class Script {
                         func.loadFunction(elseBlock.toString());
                         ret = func.exec(allVars(locals));
                     }
-                    if(ret.toString().length() !=0)return ret;
+                    if(ret.getType()!=Var.TYPE_NULL)return ret;
                     trueBlock = new StringBuilder();
                     elseBlock = new StringBuilder();
                     inBlock=0;
                 }
             }
-            return new Var(Var.TYPE_STRING);
+            return new Var();
         }
     }
 
@@ -205,12 +262,12 @@ public class Script {
         public boolean eval(String expression,HashMap<String,Var> var,Script script){
             ArrayList<String> args = NexT.script.Math.getArguments("- "+expression.trim());//bogus operator to abuse the arguments function
             try{
-            if(args.get(1).equals(EXPR_EQUAL)){           if(NexT.script.Math.parseExpression(args.get(0), var, script) == NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_NOT_EQUAL)){       if(NexT.script.Math.parseExpression(args.get(0), var, script) != NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_SMALLER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script) <  NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_GREATER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script) >  NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_SMALLER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) <= NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
-            if(args.get(1).equals(EXPR_GREATER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script) >= NexT.script.Math.parseExpression(args.get(2), var, script))return true;else return false;}
+            if(args.get(1).equals(EXPR_EQUAL)){           if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() == NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
+            if(args.get(1).equals(EXPR_NOT_EQUAL)){       if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() != NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
+            if(args.get(1).equals(EXPR_SMALLER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() <  NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
+            if(args.get(1).equals(EXPR_GREATER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() >  NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
+            if(args.get(1).equals(EXPR_SMALLER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() <= NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
+            if(args.get(1).equals(EXPR_GREATER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() >= NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
             }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Script][IfExpression] Failed to evaluate!",e);return false;}
             return false;
         }
