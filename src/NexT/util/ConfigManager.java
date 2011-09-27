@@ -112,7 +112,7 @@ public class ConfigManager {
         if(!f.exists()){if(verbose)System.out.println("CONFMAN: File not found!");return false;}
         if(!f.canRead()){if(verbose)System.out.println("CONFMAN: Can't read file!");return false;}
         if(f.isDirectory()){if(verbose)System.out.println("CONFMAN: File is a directory!");return false;}
-
+        options.clear();
         try{
             BufferedReader in = new BufferedReader(new FileReader(f));
             String read = in.readLine();

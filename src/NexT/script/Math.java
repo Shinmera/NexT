@@ -50,7 +50,7 @@ public class Math {
         
         ArrayList<String> args = getArguments(expression);
         String op = "";
-        double result = 0.0;
+        Var result = new Var("0.0");
 
         if(expression.contains(" "))op = expression.substring(0,expression.indexOf(" "));
         else op = expression;
@@ -58,65 +58,68 @@ public class Math {
         if(op.equals(OP_ADD)){
                 if(args.size()<2)throw new InvalidArgumentCountException();
                 for(int i=0;i<args.size();i++)
-                    result+=(Double)passToParser(i,args,vars,script).fix();
+                    result=new Var(result.fix()+passToParser(i,args,vars,script).fix());
         } else if (op.equals(OP_SUB)) {
                 if(args.size()<2)throw new InvalidArgumentCountException();
-                result=(Double)passToParser(0,args,vars,script).fix();
+                result=passToParser(0,args,vars,script);
                 for(int i=1;i<args.size();i++)
-                    result-=(Double)passToParser(i,args,vars,script).fix();
+                    result=new Var(result.fix()-passToParser(i,args,vars,script).fix());
         } else if (op.equals(OP_MUL)) {
                 if(args.size()<2)throw new InvalidArgumentCountException();
-                result=(Double)passToParser(0,args,vars,script).fix();;
+                result=passToParser(0,args,vars,script);
                 for(int i=1;i<args.size();i++)
-                    result*=(Double)passToParser(i,args,vars,script).fix();
+                    result=new Var(result.fix()*passToParser(i,args,vars,script).fix());
         } else if (op.equals(OP_DIV)) {
                 if(args.size()<2)throw new InvalidArgumentCountException();
-                result=(Double)passToParser(0,args,vars,script).fix();
+                result=passToParser(0,args,vars,script);
                 for(int i=1;i<args.size();i++)
-                    result/=(Double)passToParser(i,args,vars,script).fix();
+                    result=new Var(result.fix()/passToParser(i,args,vars,script).fix());
         } else if (op.equals(OP_POW)) {
                 if(args.size()>2)throw new InvalidArgumentCountException();
-                result=pow((Double)passToParser(0,args,vars,script).fix(), (Double)passToParser(1,args,vars,script).fix());
+                result=new Var(pow(passToParser(0,args,vars,script).fix(), passToParser(1,args,vars,script).fix()));
         } else if (op.equals(OP_SQR)) {
                 if(args.size()>1)throw new InvalidArgumentCountException();
-                result=sqrt((Double)passToParser(0,args,vars,script).fix());
+                result=new Var(sqrt(passToParser(0,args,vars,script).fix()));
         } else if (op.equals(OP_MOD)) {
                 if(args.size()>2)throw new InvalidArgumentCountException();
-                result=(Double)passToParser(0,args,vars,script).fix() % (Double)passToParser(1,args,vars,script).fix();
+                result=new Var(passToParser(0,args,vars,script).fix() % passToParser(1,args,vars,script).fix());
         } else if (op.equals(OP_SIN)) {
                 if(args.size()>1)throw new InvalidArgumentCountException();
-                result=sin((Double)passToParser(0,args,vars,script).fix());
+                result=new Var(sin(passToParser(0,args,vars,script).fix()));
         } else if (op.equals(OP_COS)) {
                 if(args.size()>1)throw new InvalidArgumentCountException();
-                result=cos((Double)passToParser(0,args,vars,script).fix());
+                result=new Var(cos(passToParser(0,args,vars,script).fix()));
         } else if (op.equals(OP_TAN)) {
                 if(args.size()>1)throw new InvalidArgumentCountException();
-                result=tan((Double)passToParser(0,args,vars,script).fix());
+                result=new Var(tan(passToParser(0,args,vars,script).fix()));
         } else if (op.equals(OP_RAN)) {
                 if(args.size()>0)throw new InvalidArgumentCountException();
-                result=random();
+                result=new Var(random());
         } else if (op.equals(OP_ARR)) {
                 if(args.size()!=2)throw new InvalidArgumentCountException();
-                int pos = (Integer)passToParser(1,args,vars,script).get();
+                int pos = (int)passToParser(1,args,vars,script).fix();
                 if(vars.containsKey(args.get(0))){
                     Var array = vars.get(args.get(0));
                     switch(array.getType()){
                         case Var.TYPE_BOOLEAN_ARRAY:
-                            result=((boolean[])array.get())[pos] ? 1 : 0;
+                            result=((boolean[])array.get())[pos] ? new Var(true) : new Var(false);
                             break;
                         case Var.TYPE_DOUBLE_ARRAY:
-                            result=((double[])array.get())[pos];
+                            result=new Var(((double[])array.get())[pos]);
                             break;
                         case Var.TYPE_INTEGER_ARRAY:
-                            result=((int[])array.get())[pos];
+                            result=new Var(Var.TYPE_INTEGER,((int[])array.get())[pos]+"");
+                            break;
+                        case Var.TYPE_MIXED_ARRAY:
+                            result=((Var[])array.get())[pos];
                             break;
                         default:
-                            throw new InvalidArgumentCountException("Variable '"+args.get(0)+"' has an invalid type!");
+                            result=new Var(((Object[])array.get())[pos]+"");
                     }
                 }else throw new InvalidArgumentCountException("Variable '"+args.get(0)+"' not found!");
         }else{
-                if(vars.containsKey(op))result=(Double)vars.get(op).fix();
-                else if(CONST.containsKey(op))result = CONST.get(op);
+                if(vars.containsKey(op))result=vars.get(op);
+                else if(CONST.containsKey(op))result = new Var(CONST.get(op));
                 else if(script.hasFunction(op)){
                     HashMap<String,Var> tmp = vars;
                     for(int i=0;i<args.size();i++){
@@ -125,10 +128,10 @@ public class Math {
                     }
                     return script.eval(op,tmp);
                 }
-                else if(Toolkit.isNumeric(expression))result = Double.parseDouble(expression);
+                else if(Toolkit.isNumeric(expression))result = new Var(Double.parseDouble(expression));
                 else return new Var(expression);
         }
-        return new Var(result+"");
+        return result;
     }
 
     private static Var passToParser(int n,ArrayList<String> args,HashMap<String,Var> vars,Script script) throws MissingOperandException, InvalidArgumentCountException{

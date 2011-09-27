@@ -10,6 +10,7 @@
 package NexT.script;
 
 import NexT.util.Toolkit;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ public class Var {
     public static final int TYPE_STRING_ARRAY = 0x11;
     public static final int TYPE_INTEGER_ARRAY= 0x12;
     public static final int TYPE_DOUBLE_ARRAY = 0x13;
+    public static final int TYPE_MIXED_ARRAY  = 0x14;
 
     private int type = TYPE_STRING;
     private boolean bool = false;
@@ -33,11 +35,19 @@ public class Var {
     private String[] a_str;
     private int[] a_integ;
     private double[] a_doub;
+    private Var[] a_var;
 
     public Var(){this.type=TYPE_NULL;}
     public Var(int type){this.type=type;}
     public Var(String value){type=detectType(value);set(value);}
     public Var(int type,String value){this(type);set(value);}
+    public Var(double value){type=TYPE_DOUBLE;doub=value;}
+    public Var(boolean bool){type=TYPE_BOOLEAN;this.bool=bool;}
+    public Var(boolean[] bools){type=TYPE_BOOLEAN_ARRAY;a_bool=bools;}
+    public Var(double[] doubs){type=TYPE_DOUBLE_ARRAY;a_doub=doubs;}
+    public Var(int[] ints){type=TYPE_INTEGER_ARRAY;a_integ=ints;}
+    public Var(String[] strings){type=TYPE_STRING_ARRAY;a_str=strings;}
+    public Var(Var[] vars){type=TYPE_MIXED_ARRAY;a_var=vars;}
 
     /**
      * Tries to automatically detect the type of variable from a String. Defaults to String.
@@ -61,6 +71,7 @@ public class Var {
                     else return TYPE_INTEGER_ARRAY;
                 }else{
                     if(first.equals("true")||first.equals("false"))return TYPE_BOOLEAN_ARRAY;
+                    else if(first.contains("{"))return TYPE_MIXED_ARRAY;
                     else return TYPE_STRING_ARRAY;
                 }
             }
@@ -82,6 +93,35 @@ public class Var {
             case TYPE_BOOLEAN_ARRAY: a_bool=Toolkit.stringToBoolArray(value.substring(1,value.length()-1).split(","));break;
             case TYPE_INTEGER_ARRAY: a_integ=Toolkit.stringToIntArray(value.substring(1,value.length()-1).split(","));break;
             case TYPE_DOUBLE_ARRAY: a_doub=Toolkit.stringToDoubleArray(value.substring(1,value.length()-1).split(","));break;
+            case TYPE_MIXED_ARRAY:
+                value=value.substring(1,value.length()-1).replaceAll(", ",",").replaceAll(" ,",",");
+                ArrayList<Var> vars = new ArrayList<Var>();
+                int brackets=0;int begin=0;
+                for(int i=0;i<value.length();i++){
+                    switch(value.charAt(i)){
+                        case '{':brackets++;begin=i;break;
+                        case '}':brackets--;
+                            if(brackets==0){
+                                vars.add(new Var(value.substring(begin,i+1)));
+                            }
+                            break;
+                        case ',':if(brackets==0)i++;break;
+                        default:
+                            if(brackets==0){
+                                if(value.indexOf(',', i)!=-1){
+                                    int pos = value.indexOf(",",i);
+                                    vars.add(new Var(value.substring(i,pos)));
+                                    i=pos;
+                                }else{
+                                    vars.add(new Var(value.substring(i)));
+                                    i=value.length();
+                                }
+                            }
+                            break;
+                    }
+                }
+                a_var = vars.toArray(new Var[vars.size()]);
+                break;
             default: str=value;type=TYPE_STRING;break;
         }
     }
@@ -100,6 +140,7 @@ public class Var {
             case TYPE_BOOLEAN_ARRAY: return a_bool;
             case TYPE_INTEGER_ARRAY: return a_integ;
             case TYPE_DOUBLE_ARRAY: return a_doub;
+            case TYPE_MIXED_ARRAY: return a_var;
             case TYPE_NULL: return null;
             default: return str;
         }
@@ -127,6 +168,8 @@ public class Var {
                 return a_integ[0]+0.0;
             case TYPE_DOUBLE_ARRAY: Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing double array to first element.");
                 return a_doub[0];
+            case TYPE_MIXED_ARRAY:  Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing mixed array to first element.");
+                return a_var[0].fix();
             case TYPE_NULL:         Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing NULL to 0.");
                 return 0.0;
             default: return (Toolkit.isNumeric(str)) ? Double.parseDouble(str) : doub;
