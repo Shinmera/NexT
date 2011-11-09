@@ -25,7 +25,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -85,15 +87,22 @@ public final class Toolkit {
      * @see java.awt.Color
      */
     public static Color toColor(String icolors){
-        if(icolors == null || icolors.equals(""))return Color.BLACK;
-        icolors = icolors.trim();
+        if(icolors == null || icolors.length() == 0)return Color.BLACK;
         icolors = icolors.replaceAll("_", " ");
         icolors = icolors.replaceAll(",", " ");
-        if(countSubstr(icolors, " ")==2){
-            String[] colors = icolors.trim().split(" ");
-            return new Color(Integer.parseInt(colors[0].trim()),
-                             Integer.parseInt(colors[1].trim()),
-                             Integer.parseInt(colors[2].trim()));
+        icolors = icolors.replaceAll(";", " ");
+        icolors = icolors.trim();
+        if(countSubstr(icolors, " ")>1){
+            String[] colors = icolors.split(" ");
+            if(colors.length==3)
+                return new Color(Integer.parseInt(colors[0].trim()),
+                                 Integer.parseInt(colors[1].trim()),
+                                 Integer.parseInt(colors[2].trim()));
+            if(colors.length==4)
+                return new Color(Integer.parseInt(colors[0].trim()),
+                                 Integer.parseInt(colors[1].trim()),
+                                 Integer.parseInt(colors[2].trim()),
+                                 Integer.parseInt(colors[3].trim()));
         }
         if(isNumeric(icolors))return new Color(Integer.parseInt(icolors));
         if(icolors.startsWith("#"))return Color.decode(icolors);
@@ -114,7 +123,7 @@ public final class Toolkit {
             Color col = JColorChooser.showDialog(null,"Text Color",Color.BLACK);
             if(col!=null)return col;
         }
-
+        Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Couldn't parse color string ("+icolors+"). Falling back to black!");
         return Color.BLACK;
     }
 
@@ -657,4 +666,28 @@ public final class Toolkit {
         return a;
     }
 
+    /**
+     * Quick access to a formatted date output.
+     * @param format The formatting String. Has to be SimpleDateFormat compatible. null will default to MM.dd HH:mm:ss
+     * @return The current time in the given format.
+     */
+    public static String getCurrentFormattedTime(String format){
+        SimpleDateFormat sdf;
+        if(format!=null)sdf = new SimpleDateFormat(format);
+        else            sdf = new SimpleDateFormat("dd.MM HH:mm:ss");
+        return sdf.format(new Date());
+    }
+
+    /**
+     * Returns a given string n amount of times.
+     * @param s The string to be duplicated.
+     * @param n The amount of times to append.
+     * @return The final string.
+     */
+    public static String getStringNTimes(String s,int n){
+        if(n<1||s==null)return "";
+        String ret=s;
+        for(int i=1;i<n;i++){ret+=s;}
+        return ret;
+    }
 }
