@@ -13,23 +13,23 @@ import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -690,4 +690,77 @@ public final class Toolkit {
         for(int i=1;i<n;i++){ret+=s;}
         return ret;
     }
+    
+    /**
+     * Sorts a HashMap by the values and returns it as a TreeMap.
+     * @param map The HashMap to sort.
+     * @return The sorted HashMap as a TreeMap.
+     * URL: http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java
+     */
+    public static TreeMap<String,Double> sortHashMapByDoubleValue(HashMap<String,Double> map){
+        DoubleValueComparator bvc =  new DoubleValueComparator(map);
+        TreeMap<String,Double> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(map);
+        return sorted_map;
+    }
+    
+    static class DoubleValueComparator implements Comparator {
+        Map base;
+        public DoubleValueComparator(Map base) {
+            this.base = base;
+        }
+
+        public int compare(Object a, Object b) {
+
+            if((Double)base.get(a) < (Double)base.get(b)) {
+                return 1;
+            } else if((Double)base.get(a) == (Double)base.get(b)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
+    
+    /**
+     * Sorts a HashMap by the values and returns it as a TreeMap.
+     * @param map The HashMap to sort.
+     * @return The sorted HashMap as a TreeMap.
+     * URL: http://stackoverflow.com/questions/109383/how-to-sort-a-mapkey-value-on-the-values-in-java
+     */
+    public static TreeMap<String,Integer> sortHashMapByIntegerValue(HashMap<String,Integer> map){
+        IntegerValueComparator bvc =  new IntegerValueComparator(map);
+        TreeMap<String,Integer> sorted_map = new TreeMap(bvc);
+        sorted_map.putAll(map);
+        return sorted_map;
+    }
+    
+    static class IntegerValueComparator implements Comparator {
+        Map base;
+        public IntegerValueComparator(Map base) {
+            this.base = base;
+        }
+
+        public int compare(Object a, Object b) {
+
+            if((Integer)base.get(a) < (Integer)base.get(b)) {
+                return 1;
+            } else if((Integer)base.get(a) == (Integer)base.get(b)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
+    
+    /**
+     * Round a number to a raster size.
+     * @param number The number to round.
+     * @param raster The raster/grid size.
+     * @return  The rounded number.
+     */
+    public static int roundRastered(float number, int raster){
+        return FastMath.round(number/raster)*raster;
+    }
+    
 }

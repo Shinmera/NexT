@@ -19,7 +19,7 @@ import java.util.Map;
  * OptionSet to easily manage variables in one object.
  * Works especially nice in combination with ConfigManager.
  */
-public class SimpleSet<K extends Object,V extends Object> {
+public class SimpleSet<K extends Object,V extends Object> implements Iterable<V>{
     private HashMap<K,V> map;
     private ArrayList<K> list;
 
@@ -79,7 +79,7 @@ public class SimpleSet<K extends Object,V extends Object> {
     }
 
     public OptionSet asOptionSet(){
-        OptionSet set = new OptionSet();
+        OptionSet<K,ArrayList<V>> set = new OptionSet<K,ArrayList<V>>();
         for(int i=0;i<size();i++){
             ArrayList<V> temp = new ArrayList();
             temp.add(getAt(i));
@@ -94,5 +94,9 @@ public class SimpleSet<K extends Object,V extends Object> {
             s+=getKey(i)+": "+getAt(i)+"\n";
         }
         return s;
+    }
+
+    public Iterator iterator() {
+        return map.values().iterator();
     }
 }

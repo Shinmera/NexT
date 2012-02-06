@@ -64,8 +64,7 @@ public class Var {
             else if(value.startsWith("{")&&value.endsWith("}")){
                 String first = "";
                 if(value.contains(","))first = value.substring(1,value.indexOf(",")).trim();
-                else first = value.substring(1,value.length()-1);
-
+                else first = value.substring(1,value.length()-1).trim();
                 if(Toolkit.isNumeric(first)){
                     if(first.contains("."))return TYPE_DOUBLE_ARRAY;
                     else return TYPE_INTEGER_ARRAY;
@@ -86,6 +85,7 @@ public class Var {
     public void set(String value){
         value=value.trim();
         switch(type){
+            case TYPE_NULL:break;
             case TYPE_BOOLEAN: bool=Boolean.parseBoolean(value);break;
             case TYPE_INTEGER: integ=Integer.parseInt(value);break;
             case TYPE_DOUBLE: doub=Double.parseDouble(value);break;
@@ -105,9 +105,8 @@ public class Var {
                                 vars.add(new Var(value.substring(begin,i+1)));
                             }
                             break;
-                        case ',':if(brackets==0)i++;break;
                         default:
-                            if(brackets==0){
+                            if(brackets==0&&value.charAt(i)!=','){
                                 if(value.indexOf(',', i)!=-1){
                                     int pos = value.indexOf(",",i);
                                     vars.add(new Var(value.substring(i,pos)));
@@ -151,6 +150,14 @@ public class Var {
      * @return The fixed double value of this variable.
      */
     public double fix(){
+        return fix(0);
+    }
+    
+    /**
+     * Attempts to "fix" the value to a double. A warning is logged if the operation is unsure and might return a false 0. In case of an array, n may be specified.
+     * @return The fixed double value of this variable.
+     */
+    public double fix(int n){
         switch(type){
             case TYPE_BOOLEAN:
                 return (bool) ? 1 : 0;
@@ -161,15 +168,15 @@ public class Var {
             case TYPE_DOUBLE:
                 return doub;
             case TYPE_STRING_ARRAY: Logger.getLogger("NexT").log(Level.WARNING,"[Var] Attempting to fix String array to first element.");
-                return (Toolkit.isNumeric(a_str[0])) ? Double.parseDouble(str) : 0;
-            case TYPE_BOOLEAN_ARRAY:Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing boolean array to first element.");
-                return (a_bool[0]) ? 1 : 0;
-            case TYPE_INTEGER_ARRAY:Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing integer array to first element.");
-                return a_integ[0]+0.0;
-            case TYPE_DOUBLE_ARRAY: Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing double array to first element.");
-                return a_doub[0];
-            case TYPE_MIXED_ARRAY:  Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing mixed array to first element.");
-                return a_var[0].fix();
+                return (Toolkit.isNumeric(a_str[n])) ? Double.parseDouble(str) : 0;
+            case TYPE_BOOLEAN_ARRAY:
+                return (a_bool[n]) ? 1 : 0;
+            case TYPE_INTEGER_ARRAY:
+                return a_integ[n]+0.0;
+            case TYPE_DOUBLE_ARRAY:
+                return a_doub[n];
+            case TYPE_MIXED_ARRAY:
+                return a_var[n].fix();
             case TYPE_NULL:         Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing NULL to 0.");
                 return 0.0;
             default: return (Toolkit.isNumeric(str)) ? Double.parseDouble(str) : doub;

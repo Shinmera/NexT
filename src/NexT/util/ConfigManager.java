@@ -63,9 +63,9 @@ public class ConfigManager {
         if(f.exists())f.delete();
         //if(!f.canWrite()){if(verbose)System.out.println("CONFMAN: Insufficient writing rights.");return false;}
         if(f.isDirectory()){if(verbose)System.out.println("CONFMAN: File is a directory!");return false;}
-
+        if(options.isEmpty()){if(verbose)System.out.println("CONFMAN: Warning: Empty set!");return true;}
+        
         try{
-            if(options.size()>0){
             f.createNewFile();
             OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
             PrintWriter pw = new PrintWriter(fw);
@@ -74,7 +74,7 @@ public class ConfigManager {
             pw.println("#"+programName.toUpperCase()+programVersion+" CONFIG FILE");
 
             for(int i=0;i<options.size();i++){
-                ArrayList<String> temp = options.get(i);
+                ArrayList temp = options.get(i);
                 if(temp.size()>0){
                     for(int j=0;j<temp.size();j++){
                         pw.println(options.getKey(i)+": "+temp.get(j));
@@ -89,7 +89,6 @@ public class ConfigManager {
             pw.flush();
             pw.close();
             fw.close();
-            }
         }catch(IOException e){
             e.printStackTrace();
             return false;
