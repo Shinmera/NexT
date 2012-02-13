@@ -36,7 +36,14 @@ public class Line {
         } else{
             t =  (a.getY()-r.getY()+(b.getY()-a.getY())*u)/(r.getDY());
         }
-        if (t < 0 || u < 0 || u > 1)return 0;                                       //NOPE.
+        if (t < 0 || u < 0 || u > 1)return -1;                                       //NOPE.
+        return t;
+    }
+    
+    public double getIntersection2D(Line l){
+        Ray r = new Ray(l.getA(),l.getB());
+        double t = getIntersection2D(r);
+        if(t< 0 || t > 1)return -1;
         return t;
     }
 }
