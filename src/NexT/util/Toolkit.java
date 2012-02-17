@@ -763,4 +763,40 @@ public final class Toolkit {
         return FastMath.round(number/raster)*raster;
     }
     
+    /**
+     * Returns the higher result of a quadratic equation of the format ax^2+bx+c.
+     * @param a
+     * @param b
+     * @param c
+     * @return The higher of the two possible results.
+     */
+    public static double quadraticEquationMax(double a,double b,double c){
+        double x = (-b+Math.sqrt(Math.pow(b, 2)-4*a*c))/(2*a);
+        double y = (-b-Math.sqrt(Math.pow(b, 2)-4*a*c))/(2*a);
+        return Math.max(x, y);
+    }
+    
+    /**
+     * Returns the lower result of a quadratic equation of the format ax^2+bx+c.
+     * @param a
+     * @param b
+     * @param c
+     * @return The lower of the two possible results.
+     */
+    public static double quadraticEquationMin(double a,double b,double c){
+        double x = (-b+Math.sqrt(Math.pow(b, 2)-4*a*c))/(2*a);
+        double y = (-b-Math.sqrt(Math.pow(b, 2)-4*a*c))/(2*a);
+        return Math.min(x, y);
+    }
+    
+    /**
+     * a^2+b^2=c^2
+     * @param a
+     * @param b
+     * @return c
+     */
+    public static double pythagoras(double a,double b){
+        return Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
+    }
+    
 }

@@ -10,7 +10,7 @@
 package NexT.util;
 
 public class Vector {
-    private double x=0,y=0,z=0;
+    public double x=0,y=0,z=0;
 
     public Vector(){}
     public Vector(double x,double y){this.x=x;this.y=y;}
