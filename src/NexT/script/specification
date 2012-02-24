@@ -1,23 +1,45 @@
-#NexT/script                                                                    This line is essential, it defines the script header. Files without it won't load.
-lol = 5                                                                         Variables need no initialization or specification. Automatically parsed.
-string = "string"                                                               Strings need to be encapsed in quotation marks.
+------------------------------------------------------
+Precompilation:
+Every block gets turned into a function. Newlines get stripped.
+Example:
 
-defun testFunction{                                                             Function definition. Defun keyword, followed by function name. No argument definition.
-    a = 10                                                                      Local scope variables hide global ones.
-    b = (+ $0 5 (randomInt -100 100 ) (sin (/ a 10 ) ) )                        Math expressions follow LISP syntax and can call other functions.
-    if a >= b {                                                                 If statements support the following comparisons: <,>,==,<=,>=,!=
-        return a                                                                Return statements are an immediate function exit point.
-    }                                                                           Brackets around if blocks are enforced.
-    return b
-}
+(defun foo () (
+    (= a 10)
+    (= b "bla")
+    (= c 15)
+    (if a >= c (
+        (print b)
+    ))
+))
 
-defun randomInt{
-    return (+ (* (rand) (+ (makePositive $1 ) (makePositive $0 ) ) ) $0 )       Arguments can be accessed via $n
-}
+Compiled:
+(defun foo ((= a 10) (= b "bla") (= c 15) (if a >= c (print b))))
 
-defun makePositive{
-    if $0 < 0 {
-        return (* $0 -1 )
-    }
-    return $0
-}
+
+------------------------------------------------------
+Predefined functions:
+=       2   null    Defines or sets variables
++       2+  num     Adds numbers
+-       2+  num     Subtracts numbers (first subtracted by following)
+/       2+  num     Divides numbers (first divided by following)
+*       2+  num     Multiplies numbers
+%       2   num     Modulo
+^       2   num     Power
+_       1   num     Squareroot
+<       2   num     Reads from a list
+<<      3   list    Reads a range from a list
+>       2   null    Adds a value to a list
+>>      3   null    Sets a value in a list
+sin     1   num     Sinus
+cos     1   num     Cosinus
+tan     1   num     Tangens
+rand    0   num     Returns a random number between 0 and 1
+concat  2+  string  Combines strings
+defun   3   null    Defines a function
+if      4   null    If statement
+while   2   null    While statement
+for     4   null    For statement
+print   1+  string  Prints to the console
+read    0   string  Reads from the console
+fwrite  2   boolean Write string to a file
+fread   1   string  Read string from a file

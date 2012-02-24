@@ -14,6 +14,7 @@ public class Vector2 {
 
     public Vector2(){}
     public Vector2(double x,double y){this.x=x;this.y=y;}
+    public Vector2(Vector v){this.x=v.x;this.y=v.y;}
 
     public double getX(){return x;}
     public double getY(){return y;}
@@ -73,5 +74,10 @@ public class Vector2 {
     public void stretch(double d){
         normalize();
         x*=d;y*=d;
+    }
+    
+    public void ortho(){
+        double temp = x;
+        x=-y;y=temp;
     }
 }
