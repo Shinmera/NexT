@@ -799,4 +799,8 @@ public final class Toolkit {
         return Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
     }
     
+    public static int nearestHighPowerOfTwo(int x){
+        return (int) Math.ceil(Math.log(x)/Math.log(2));
+    }
+    
 }
