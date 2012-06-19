@@ -10,7 +10,7 @@ package NexT.err;
 import java.io.File;
 import java.util.logging.Logger;
 
-public class NLogger{
+public abstract class NLogger{
     public static Logger get(){
         Logger lg = Logger.getLogger("+");
         lg.setUseParentHandlers(false);
