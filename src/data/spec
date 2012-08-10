@@ -1,0 +1,20 @@
+/* Marks a multi-line comment. Everything between the begin and end is skipped.
+   This includes code segments and all, as long as no ending mark is contained.
+   The ending mark looks like this: */
+//This is a single line comment. It skips everything after the comment mark.
+
+object: {                       //Defines an object called object with the following attributes:
+  bool: true;                   //Defines a boolean called bool
+  int: 1;                       //Defines an integer called int
+  double: 0.0;                  //Defines a double called double
+  string: whatever;             //Defines a string called string
+};
+
+and:{this:false;is:20;compact:heh;};
+parent: {
+  child: {
+    child2: {
+      wat: true;
+    };
+  };
+};
