@@ -6,7 +6,7 @@
   license: -
 \**********************/
 
-package data;
+package NexT.data;
 
 import NexT.util.Toolkit;
 import java.util.HashMap;

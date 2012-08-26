@@ -248,12 +248,12 @@ public final class Toolkit {
      * @return The glued array.
      */
     public static String implode(Object[] ary, String delim) {
-    String out = "";
-    for(int i=0; i<ary.length; i++) {
-        if(i!=0) { out += delim; }
-        out += ary[i]+"";
-    }
-    return out;
+        StringBuilder out = new StringBuilder();
+        for(int i=0; i<ary.length; i++) {
+            if(i!=0) { out.append(delim); }
+            out.append(ary[i].toString());
+        }
+        return out.toString();
     }
 
     /**
@@ -683,12 +683,29 @@ public final class Toolkit {
      * @param s The string to be duplicated.
      * @param n The amount of times to append.
      * @return The final string.
+     * @deprecated Alias for repeatString
      */
-    public static String getStringNTimes(String s,int n){
-        if(n<1||s==null)return "";
-        String ret=s;
-        for(int i=1;i<n;i++){ret+=s;}
-        return ret;
+    @Deprecated
+    public static String getStringNTimes(String s,int n){return repeatString(s,n);}
+    
+    /**
+     * Returns a given string n amount of times.
+     * @param s The string to be duplicated.
+     * @param n The amount of times to append.
+     * @return The final string.
+     */
+    public static String repeatString(String s,int n){
+        return new String(new char[n]).replace("\0",s);
+    }
+    
+    /**
+     * Splits a string into l sized chunks.
+     * @param s The string to split.
+     * @param l The length of each string chunk.
+     * @return  Array of the string chunks.
+     */
+    public String[] splitStringByLength(String s,int l){
+        return s.split("(?<=\\G.{"+l+"})");
     }
     
     /**
