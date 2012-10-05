@@ -10,6 +10,7 @@ package NexT.data;
 
 import NexT.util.Toolkit;
 import java.util.HashMap;
+import java.util.Set;
 
 public class DObject<Type extends Object> {
     public static final int TYPE_NULL = 0;
@@ -23,7 +24,14 @@ public class DObject<Type extends Object> {
     private Type g;
     private HashMap<String,DObject> o;
     
-    public DObject(Type t) throws Exception{
+    public DObject(){
+        try{init((Type)new HashMap<String,DObject>());
+        }catch(Exception ex){}
+    }
+    
+    public DObject(Type t) throws Exception{init(t);}
+    
+    private void init(Type t) throws Exception{
         if(t==null){
             type = TYPE_NULL;
             g=null;
@@ -61,6 +69,9 @@ public class DObject<Type extends Object> {
                 try{
                     obj = new DObject<Double>((Double)Double.parseDouble(o+""));
                 }catch(Exception ex2){
+                    if(o instanceof Boolean){
+                        obj = new DObject<Boolean>((Boolean)o);
+                    }else
                     if(o instanceof String){
                         if(o.equals("false"))    obj = new DObject<Boolean>(Boolean.FALSE);
                         else if(o.equals("true"))obj = new DObject<Boolean>(Boolean.TRUE);
@@ -78,7 +89,11 @@ public class DObject<Type extends Object> {
     public boolean is(int type){return (this.type==type);}
     public Type    get()        {return (g==null) ?  (o==null) ? null : (Type)o : g;}
     public DObject get(String s){return (o==null) ? null : o.get(s);}
+    public Set<String> getKeySet(){return (o==null) ? null : o.keySet();}
+    public boolean contains(String key){return (o==null) ? null : o.containsKey(key);}
     public void set(Type t)             {if(g!=null)g=t;else if(o!=null)o=(HashMap)t;}
     public void set(String s,DObject d) {if(o!=null)o.put(s,d);}
+    public void set(String s,Object o) throws Exception{set(s,parse(o));}
+    public int size(){return (o==null)? 1 : o.size();}
     public String toString(){return get()+"";}
 }
