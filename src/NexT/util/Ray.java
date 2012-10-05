@@ -15,7 +15,7 @@ public class Ray {
     public Ray(double x,double y,double z){pos = new Vector(x,y,z);dir = new Vector();}
     public Ray(Vector pos){this.pos=pos;dir = new Vector();}
     public Ray(double x,double y,double z,double dx,double dy,double dz){pos = new Vector(x,y,z);dir = new Vector(dx,dy,dz);dir.normalize();}
-    public Ray(Vector pos,Vector dir){this.pos=pos;this.dir=dir;dir.normalize();}
+    public Ray(Vector pos,Vector dir){this.pos=pos.multiply(1);this.dir=dir.multiply(1);this.dir.normalize();}
     
     public Vector getPoint(double t){
         return pos.add(dir.multiply(t));

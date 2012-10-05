@@ -83,11 +83,12 @@ public final class Toolkit {
      * even literal colors. If the color can't be parsed, it returns black.
      *
      * @param icolors The String which is to be parsed into a color Object.
+     * @param fallback Fallback color in case it fails to parse the string.
      * @return The parsed Color object.
      * @see java.awt.Color
      */
-    public static Color toColor(String icolors){
-        if(icolors == null || icolors.length() == 0)return Color.BLACK;
+    public static Color toColor(String icolors,Color fallback){
+        if(icolors == null || icolors.length() == 0)return fallback;
         icolors = icolors.replaceAll("_", " ");
         icolors = icolors.replaceAll(",", " ");
         icolors = icolors.replaceAll(";", " ");
@@ -124,8 +125,9 @@ public final class Toolkit {
             if(col!=null)return col;
         }
         Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Couldn't parse color string ("+icolors+"). Falling back to black!");
-        return Color.BLACK;
+        return fallback;
     }
+    public static Color toColor(String icolors){return toColor(icolors,Color.BLACK);}
 
     /**
      * Trims the string with begin and end limiters.
