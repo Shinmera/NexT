@@ -10,15 +10,13 @@
 package NexT.err;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.logging.LogRecord;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class NHandler extends Handler{
@@ -27,8 +25,10 @@ public class NHandler extends Handler{
     
     public NHandler(File f){
         try{
-            OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
-            pw = new PrintWriter(fw);
+            if(f!=null){
+                OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
+                pw = new PrintWriter(fw);
+            }
         }catch(Exception e){
             Logger.getLogger("NexT").log(Level.WARNING,"[NexT][NLogger] Couldn't initialize error dump file "+f.getAbsolutePath());
         }
