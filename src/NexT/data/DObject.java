@@ -8,7 +8,6 @@
 
 package NexT.data;
 
-import NexT.util.Toolkit;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -29,9 +28,9 @@ public class DObject<Type extends Object> {
         }catch(Exception ex){}
     }
     
-    public DObject(Type t) throws Exception{init(t);}
+    public DObject(Type t){init(t);}
     
-    private void init(Type t) throws Exception{
+    private void init(Type t){
         if(t==null){
             type = TYPE_NULL;
             g=null;
@@ -51,11 +50,11 @@ public class DObject<Type extends Object> {
             type = TYPE_OBJECT;
             o=(HashMap)t;
         }else{
-            throw new Exception("Bad class type: '"+t.getClass()+"' is not recognized.");
+            throw new IllegalArgumentException("Bad class type: '"+t.getClass()+"' is not recognized.");
         }
     }
     
-    public static DObject parse(Object o) throws Exception{
+    public static DObject parse(Object o){
         DObject obj = null;
         
         if(o==null){
@@ -77,7 +76,7 @@ public class DObject<Type extends Object> {
                         else if(o.equals("true"))obj = new DObject<Boolean>(Boolean.TRUE);
                         else                     obj = new DObject<String>(o+"");
                     }else{
-                        throw new Exception("Bad class type: '"+o.getClass()+"' is not recognized.");
+                        throw new IllegalArgumentException("Bad class type: '"+o.getClass()+"' is not recognized.");
                     }
                 }
             }
