@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -372,6 +373,11 @@ public final class Toolkit {
         for(int i=0;i<a.length;i++)b[i]=Boolean.parseBoolean(a[i]);
         return b;
     }
+    
+    public static int[] toIntArray(Object[] a){         int[] b=new int[a.length];          for(int i=0;i<a.length;i++){b[i]=(Integer)a[i];}    return b;}
+    public static double[] toDoubleArray(Object[] a){   double[] b=new double[a.length];    for(int i=0;i<a.length;i++){b[i]=(Double)a[i];}     return b;}
+    public static float[] toFloatArray(Object[] a){     float[] b=new float[a.length];      for(int i=0;i<a.length;i++){b[i]=(Float)a[i];}      return b;}
+    public static boolean[] toBoolArray(Object[] a){    boolean[] b=new boolean[a.length];  for(int i=0;i<a.length;i++){b[i]=(Boolean)a[i];}    return b;}
 
     /**
      * Makes a number positive.
@@ -822,4 +828,17 @@ public final class Toolkit {
         return (int) Math.ceil(Math.log(x)/Math.log(2));
     }
     
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static Random rnd = new Random();
+    /**
+     * Generate a random string of given length
+     * @param len Length of the string
+     * @return 
+     */
+    public static String randomString( int len ){
+        StringBuilder sb = new StringBuilder( len );
+        for( int i = 0; i < len; i++ )
+            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+        return sb.toString();
+    }
 }
