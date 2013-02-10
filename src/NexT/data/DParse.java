@@ -13,8 +13,8 @@ import java.io.File;
 import java.util.HashMap;
 
 public class DParse {
-    public static DObject<HashMap<String,DObject>> parse(File f) throws Exception{return parse(Toolkit.loadFileToString(f));}
-    public static DObject<HashMap<String,DObject>> parse(String s) throws Exception{
+    public static DObject<HashMap<String,DObject>> parse(File f){return parse(Toolkit.loadFileToString(f));}
+    public static DObject<HashMap<String,DObject>> parse(String s){
         DObject<HashMap<String,DObject>> obj = new DObject<HashMap<String,DObject>>(new HashMap<String,DObject>());
         s = s.replaceAll("//(.+)","").replaceAll("(?s)/\\*(.+?)\\*/", "").trim();
 
@@ -47,14 +47,40 @@ public class DParse {
         return obj;
     }
     
+    public static String parse(DObject<HashMap<String,DObject>> obj, boolean beauty){
+        if(beauty) return parse(obj, 0);
+        else       return parse(obj);
+    }
+    
+    public static String parse(DObject<HashMap<String,DObject>> obj, int level){
+        StringBuilder s = new StringBuilder();
+        HashMap<String,DObject> map = obj.get();
+        String padding = (level<=0) ? "" : Toolkit.repeatString(" ", level*4);
+        if(level!=-1)level++;
+        for(String key : map.keySet()){
+            DObject val = map.get(key);
+            if(val.is(DObject.TYPE_OBJECT)){
+                s.append("\n").append(padding).append(key).append(": {\n").
+                    append(parse((DObject<HashMap<String,DObject>>)val, level)).
+                append(padding).append("};\n");
+            }else{
+                s.append(padding).append(key).append(": ").append(val).append(";\n");
+            }
+        }
+        return s.toString();
+    }
+    
     public static String parse(DObject<HashMap<String,DObject>> obj){
-        String s = "";
+        StringBuilder s = new StringBuilder();
         HashMap<String,DObject> map = obj.get();
         for(String key : map.keySet()){
             DObject val = map.get(key);
-            if(val.is(DObject.TYPE_OBJECT))s+=key+":{"+parse((DObject<HashMap<String,DObject>>)val)+"};";
-            else                           s+=key+":"+val+";";
+            if(val.is(DObject.TYPE_OBJECT)){
+                s.append(key).append(":{").append(parse((DObject<HashMap<String,DObject>>)val)).append("};");
+            }else{
+                s.append(key).append(":").append(val).append(";");
+            }
         }
-        return s;
+        return s.toString();
     }
 }
