@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -840,5 +841,16 @@ public final class Toolkit {
         for( int i = 0; i < len; i++ )
             sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
         return sb.toString();
+    }
+    
+    /**
+     * Returns the printStackTrace() output of the Throwable as a string.
+     * @param t The Throwable.
+     * @return A string representation of the stack trace message.
+     */
+    public static String stackTrace(Throwable t){
+        StringWriter trace = new StringWriter();
+        t.printStackTrace(new PrintWriter(trace));
+        return trace.toString();
     }
 }
