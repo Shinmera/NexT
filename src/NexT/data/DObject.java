@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class DObject<Type extends Object> {
-    public static final int TYPE_NULL = 0;
+    public static final int TYPE_NULL    = 0;
     public static final int TYPE_BOOLEAN = 1;
     public static final int TYPE_INTEGER = 2;
-    public static final int TYPE_DOUBLE = 3;
-    public static final int TYPE_STRING = 4;
-    public static final int TYPE_OBJECT = 5;
+    public static final int TYPE_LONG    = 3;
+    public static final int TYPE_DOUBLE  = 4;
+    public static final int TYPE_STRING  = 5;
+    public static final int TYPE_OBJECT  = 6;
     
     private int type = TYPE_NULL;
     private Type g;
@@ -36,6 +37,9 @@ public class DObject<Type extends Object> {
             g=null;
         }if(t instanceof Integer){
             type = TYPE_INTEGER;
+            g=t;
+        }if(t instanceof Long){
+            type = TYPE_LONG;
             g=t;
         }else if(t instanceof Double){
             type = TYPE_DOUBLE;
@@ -66,17 +70,21 @@ public class DObject<Type extends Object> {
                 obj = new DObject<Integer>((Integer)Integer.parseInt(o+""));
             }catch(Exception ex){
                 try{
-                    obj = new DObject<Double>((Double)Double.parseDouble(o+""));
+                    obj = new DObject<Long>((Long)Long.parseLong(o+""));
                 }catch(Exception ex2){
-                    if(o instanceof Boolean){
-                        obj = new DObject<Boolean>((Boolean)o);
-                    }else
-                    if(o instanceof String){
-                        if(o.equals("false"))    obj = new DObject<Boolean>(Boolean.FALSE);
-                        else if(o.equals("true"))obj = new DObject<Boolean>(Boolean.TRUE);
-                        else                     obj = new DObject<String>(o+"");
-                    }else{
-                        throw new IllegalArgumentException("Bad class type: '"+o.getClass()+"' is not recognized.");
+                    try{
+                        obj = new DObject<Double>((Double)Double.parseDouble(o+""));
+                    }catch(Exception ex3){
+                        if(o instanceof Boolean){
+                            obj = new DObject<Boolean>((Boolean)o);
+                        }else
+                        if(o instanceof String){
+                            if(o.equals("false"))    obj = new DObject<Boolean>(Boolean.FALSE);
+                            else if(o.equals("true"))obj = new DObject<Boolean>(Boolean.TRUE);
+                            else                     obj = new DObject<String>(o+"");
+                        }else{
+                            throw new IllegalArgumentException("Bad class type: '"+o.getClass()+"' is not recognized.");
+                        }
                     }
                 }
             }
@@ -92,7 +100,7 @@ public class DObject<Type extends Object> {
     public boolean contains(String key){return (o==null) ? null : o.containsKey(key);}
     public void set(Type t)             {if(g!=null)g=t;else if(o!=null)o=(HashMap)t;}
     public void set(String s,DObject d) {if(o!=null)o.put(s,d);}
-    public void set(String s,Object o) throws Exception{set(s,parse(o));}
+    public void set(String s,Object o)  {set(s,parse(o));}
     public int size(){return (o==null)? 1 : o.size();}
     public String toString(){return get()+"";}
 }
