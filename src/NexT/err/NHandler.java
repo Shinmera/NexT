@@ -9,6 +9,7 @@
 
 package NexT.err;
 
+import NexT.util.Toolkit;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -38,10 +39,9 @@ public class NHandler extends Handler{
         if(record.getThrown()==null)
             return sdf.format(record.getMillis())+" ["+record.getLevel().getName()+"]"+record.getMessage();
         else{
-            System.out.println(sdf.format(record.getMillis())+" ["+record.getLevel().getName()+"]"+record.getMessage()
-                +"\n"+record.getResourceBundleName()+"."+record.getSourceClassName()+"."+record.getSourceMethodName()+": ");
-            record.getThrown().printStackTrace();
-            return "";
+            return sdf.format(record.getMillis())+" ["+record.getLevel().getName()+"]"+record.getMessage()+"\n"+
+                   record.getResourceBundleName()+"."+record.getSourceClassName()+"."+record.getSourceMethodName()+": "+
+                   Toolkit.stackTrace(record.getThrown());
         }
     }
 
