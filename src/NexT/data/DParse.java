@@ -18,25 +18,25 @@ public class DParse {
         DObject<HashMap<String,DObject>> obj = new DObject<HashMap<String,DObject>>(new HashMap<String,DObject>());
         s = s.replaceAll("//(.+)","").replaceAll("(?s)/\\*(.+?)\\*/", "").trim();
 
-        String[] vals = s.split(";");
+        String[] statements = s.split(";");
         int height = 0;
         String inside="",okey="",key="",rest="";
-        for(String line : vals){
-            line = line.trim();
-            if(line.contains(":"))key = line.substring(0,line.indexOf(":")).trim();
-            rest= line.substring(line.indexOf(":")+1).trim();
+        for(String statement : statements){
+            statement = statement.trim();
+            if(statement.contains(":"))key = statement.substring(0,statement.indexOf(":")).trim();
+            rest= statement.substring(statement.indexOf(":")+1).trim();
 
-            if("".equals(okey)){
+            if(okey.equals("")){
                 if(rest.startsWith("{")){
                     okey=key;
                 }else{
                     obj.set(key,DObject.parse(rest));
                 }
             }
-            if(!"".equals(okey)){
-                inside+=line+';';
-                height+=Toolkit.countSubstr(line, "\\{");
-                height+=Toolkit.countSubstr(line, "\\}");
+            if(!okey.equals("")){
+                inside+=statement+';';
+                height+=Toolkit.countSubstr(statement, "\\{");
+                height+=Toolkit.countSubstr(statement, "\\}");
                 if(height==0){
                     obj.set(okey,parse(inside.substring(inside.indexOf("{")+1,inside.lastIndexOf("}"))));
                     okey="";
