@@ -76,7 +76,8 @@ public class DParse {
         for(String key : map.keySet()){
             DObject val = map.get(key);
             if(val.is(DObject.TYPE_OBJECT)){
-                s.append(key).append(":{").append(parse((DObject<HashMap<String,DObject>>)val)).append("};");
+                if(val.size() > 0) //Quick and dirty fix. Remove once proper parser is implemented.
+                    s.append(key).append(":{").append(parse((DObject<HashMap<String,DObject>>)val)).append("};");
             }else{
                 s.append(key).append(":").append(val).append(";");
             }
