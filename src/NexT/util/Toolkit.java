@@ -74,7 +74,9 @@ public final class Toolkit {
      * @param stack The String which is to be searched through.
      * @param sub The String which is to be searched for.
      * @return The amount of times it has been found.
+     * @see StringUtils#countSubstr(java.lang.String, java.lang.String) 
      */
+    @Deprecated
     public static int countSubstr(String stack,String sub){
         return stack.split(sub).length-1;
     }
@@ -138,14 +140,12 @@ public final class Toolkit {
      * @param begin The left side limiter.
      * @param end The right side limiter.
      * @return The trimmed string.
+     * @see StringUtils#inBetween(java.lang.String, java.lang.String, java.lang.String) 
      */
+    @Deprecated
     public static String inBetween(String stack,String begin,String end){
-        int beginPos = stack.indexOf(begin)+begin.length();
-        int endPos = stack.indexOf(end,beginPos);
-        if(beginPos==-1||endPos==-1)return null;
-        return stack.substring(beginPos,endPos);
+        return inBetween(stack, begin, end, 0);
     }
-
 
     /**
      * Trims the string with begin and end limiters.
@@ -155,7 +155,9 @@ public final class Toolkit {
      * @param end The right side limiter.
      * @param pos The position to start searching for.
      * @return The trimmed string.
+     * @see StringUtils#inBetween(java.lang.String, java.lang.String, java.lang.String, int) 
      */
+    @Deprecated
     public static String inBetween(String stack,String begin,String end,int pos){
         int beginPos = stack.indexOf(begin,pos)+begin.length();
         int endPos = stack.indexOf(end,beginPos);
@@ -250,7 +252,9 @@ public final class Toolkit {
      * @param ary The array to be glued together.
      * @param delim The delimiter to be put between elements.
      * @return The glued array.
+     * @see StringUtils#implode(java.lang.Object[], java.lang.String) 
      */
+    @Deprecated
     public static String implode(Object[] ary, String delim) {
         StringBuilder out = new StringBuilder();
         for(int i=0; i<ary.length; i++) {
@@ -306,7 +310,9 @@ public final class Toolkit {
      * @param in The string to append the spaces to.
      * @param maxlen The maximum size of the row.
      * @return the new String with appended spaces.
+     * @see StringUtils#padding(java.lang.String, int, java.lang.String) 
      */
+    @Deprecated
     public static String insertSpaces(String in,int maxlen){
         for(int i=in.length();i<maxlen;i++)
             in+=" ";
@@ -318,7 +324,9 @@ public final class Toolkit {
      *
      * @param s the string to map-ify
      * @return The resulting key->value map
+     * @see StringUtils#stringToMap(java.lang.String) 
      */
+    @Deprecated
     public static HashMap<String,String> stringToMap(String s){
         return stringToMap(s,"\n","=");
     }
@@ -330,7 +338,9 @@ public final class Toolkit {
      * @param delim1 the delimiter between two key->value pairs
      * @param delim2 the delimiter between the key and the value
      * @return The resulting key->value map
+     * @see StringUtils#stringToMap(java.lang.String, java.lang.String, java.lang.String) 
      */
+    @Deprecated
     public static HashMap<String,String> stringToMap(String s,String delim1,String delim2){
         HashMap<String,String> map = new HashMap();
         String[] lines = s.split(delim1);
@@ -419,6 +429,7 @@ public final class Toolkit {
         else log.info(s);
     }
 
+    @Deprecated
     private static String getN(String c,int n){
         String ret = "";
         for(int i=0;i<n;i++){ret+=c;}
@@ -693,6 +704,7 @@ public final class Toolkit {
      * @param n The amount of times to append.
      * @return The final string.
      * @deprecated Alias for repeatString
+     * @see StringUtils#repeatString(java.lang.String, int) 
      */
     @Deprecated
     public static String getStringNTimes(String s,int n){return repeatString(s,n);}
@@ -702,7 +714,9 @@ public final class Toolkit {
      * @param s The string to be duplicated.
      * @param n The amount of times to append.
      * @return The final string.
+     * @see StringUtils#repeatString(java.lang.String, int) 
      */
+    @Deprecated
     public static String repeatString(String s,int n){
         return new String(new char[n]).replace("\0",s);
     }
@@ -712,7 +726,9 @@ public final class Toolkit {
      * @param s The string to split.
      * @param l The length of each string chunk.
      * @return  Array of the string chunks.
+     * @see StringUtils#splitStringByLength(java.lang.String, int) 
      */
+    @Deprecated
     public String[] splitStringByLength(String s,int l){
         return s.split("(?<=\\G.{"+l+"})");
     }
@@ -835,7 +851,9 @@ public final class Toolkit {
      * Generate a random string of given length
      * @param len Length of the string
      * @return 
+     * @see StringUtils#randomString
      */
+    @Deprecated
     public static String randomString( int len ){
         StringBuilder sb = new StringBuilder( len );
         for( int i = 0; i < len; i++ )
