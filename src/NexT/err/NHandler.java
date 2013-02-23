@@ -22,7 +22,7 @@ import java.util.logging.LogRecord;
  * @author Shinmera
  */
 public class NHandler extends Handler{
-    public static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
     protected Level level;
     
     public NHandler(){this(Level.INFO);}
