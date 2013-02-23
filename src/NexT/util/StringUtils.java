@@ -53,15 +53,44 @@ public final class StringUtils {
     }
 
     /**
-     * Glues together all the array elements with {@link delim} in between elements.
+     * Glues together the array with delim inserted between elements.
      * 
      * @param ary The array to be glued together.
      * @param delim The delimiter to be put between elements.
      * @return The glued array.
      */
     public static String implode(Object[] ary, String delim) {
+        return implode(ary, delim, 0, ary.length);
+    }
+
+    /**
+     * Glues together the array from start out with delim inserted between each
+     * element.
+     * 
+     * @param ary The array to be glued together.
+     * @param delim The delimiter to be put between elements.
+     * @return The glued array.
+     */
+    public static String implode(Object[] ary, String delim, int start) {
+        return implode(ary, delim, start, ary.length);
+    }
+
+    /**
+     * Glues together the array between start and stop with delim inserted
+     * between each element.
+     * 
+     * @param ary The array to be glued together.
+     * @param delim The delimiter to be put between elements.
+     * @param start The start index.
+     * @param stop The stop index.
+     * @return The glued array.
+     */
+    public static String implode(Object[] ary, String delim, int start, int stop) {
+        if(start<0)         throw new IllegalArgumentException("Start cannot be below zero.");
+        if(stop<start)      throw new IllegalArgumentException("Stop cannot be smaller than start.");
+        if(stop>ary.length) throw new IllegalArgumentException("Stop cannot be larger than the array.");
         StringBuilder out = new StringBuilder();
-        for(int i=0; i<ary.length; i++) {
+        for(int i=start; i<stop; i++) {
             if(i!=0) { out.append(delim); }
             out.append(ary[i].toString());
         }
