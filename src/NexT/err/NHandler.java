@@ -10,30 +10,23 @@
 package NexT.err;
 
 import NexT.util.Toolkit;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
+/**
+ * Logging handler class that writes and formats the log events to the console.
+ * This uses an internal logging level and is intended for use with a logger
+ * that uses a global logging level of ALL.
+ * @author Shinmera
+ */
 public class NHandler extends Handler{
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    PrintWriter pw;
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    protected Level level;
     
-    public NHandler(File f){
-        try{
-            if(f!=null){
-                OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
-                pw = new PrintWriter(fw);
-            }
-        }catch(Exception e){
-            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][NLogger] Couldn't initialize error dump file "+f.getAbsolutePath());
-        }
-    }
+    public NHandler(){this(Level.INFO);}
+    public NHandler(Level level){this.level=level;}
 
     public String sformat(LogRecord record) {
         if(record.getThrown()==null)
@@ -45,27 +38,15 @@ public class NHandler extends Handler{
         }
     }
 
-    public String format(LogRecord record) {
-        if(record.getLevel()==null)record.setLevel(Level.INFO);
-        if(record.getThrown()==null)
-            return sdf.format(record.getMillis())+" ["+record.getLevel().getName()+"]"+record.getMessage()
-                +"\n"+record.getResourceBundleName()+"."+record.getSourceClassName()+"."+record.getSourceMethodName();
-        else
-            return sdf.format(record.getMillis())+" ["+record.getLevel().getName()+"]"+record.getMessage()
-                +"\n"+record.getResourceBundleName()+"."+record.getSourceClassName()+"."+record.getSourceMethodName()+": "
-                +record.getThrown().getMessage();
-    }
-
     @Override
     public void publish(LogRecord record) {
-        System.out.println(sformat(record));
-        if(pw!=null){
-            pw.println(format(record));
-            pw.flush();
-        }
+        if(record.getLevel().intValue() >= level.intValue())
+            System.out.println(sformat(record));
     }
 
-    public void flush() { pw.flush(); }
-    public void close() throws SecurityException { pw.close(); }
-
+    public void flush(){}
+    public void close() throws SecurityException{}
+    
+    public void setLevel(Level level){this.level=level;}
+    public Level getLevel(){return level;}
 }
