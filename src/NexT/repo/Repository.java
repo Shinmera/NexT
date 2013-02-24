@@ -1,5 +1,6 @@
 package NexT.repo;
 
+import NexT.Commons;
 import NexT.util.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -34,7 +35,7 @@ public class Repository {
             packages = Toolkit.downloadFileToString(new URL(url,"packages")).split("\n");
             gotInfo=true;
         } catch (MalformedURLException ex) {
-            Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Repository] URL malformed.", ex);
+            Commons.log.log(Level.WARNING, "[NexT][Repository] URL malformed.", ex);
         }
     }
 
@@ -55,7 +56,7 @@ public class Repository {
         for(int i=0;i<deps.length;i++){
             deps[i]=deps[i].trim();
             if(deps[i].length()!=0){
-                Logger.getLogger("NexT").info("[NexT][Repository] Installing dependency: "+deps[i]);
+                Commons.log.info("[NexT][Repository] Installing dependency: "+deps[i]);
                 Package pack = new Package(this,deps[i]);
                 if(installDependencies(pack,location)){
                     if(!pack.installPackage(location))return false;

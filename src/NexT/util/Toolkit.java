@@ -9,6 +9,7 @@
 
 package NexT.util;
 
+import NexT.Commons;
 import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -128,7 +129,7 @@ public final class Toolkit {
             Color col = JColorChooser.showDialog(null,"Text Color",Color.BLACK);
             if(col!=null)return col;
         }
-        Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Couldn't parse color string ("+icolors+"). Falling back to black!");
+        Commons.log.log(Level.WARNING,"[NexT][Toolkit] Couldn't parse color string ("+icolors+"). Falling back to black!");
         return fallback;
     }
     public static Color toColor(String icolors){return toColor(icolors,Color.BLACK);}
@@ -184,7 +185,7 @@ public final class Toolkit {
             }
             bout.close();
             in.close();
-        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);return false;}
+        }catch(Exception e){Commons.log.log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);return false;}
 	return true;
     }
 
@@ -198,7 +199,7 @@ public final class Toolkit {
                 s.append(temp+"\n");
             }
             return s.toString();
-        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);}
+        }catch(Exception e){Commons.log.log(Level.WARNING,"[NexT][Toolkit] File download failed.",e);}
         return "";
     }
 
@@ -237,10 +238,10 @@ public final class Toolkit {
                     fos.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to unzip data.",e);continue;
+                Commons.log.log(Level.WARNING,"[NexT][Toolkit] Failed to unzip data.",e);continue;
             } finally {
                 if (fos != null) 
-                    try {fos.close();} catch (IOException e) {Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to read archive.",e);}
+                    try {fos.close();} catch (IOException e) {Commons.log.log(Level.WARNING,"[NexT][Toolkit] Failed to read archive.",e);}
             }
         }
         return true;
@@ -458,7 +459,7 @@ public final class Toolkit {
             pw.flush();
             pw.close();
         }catch(IOException e){
-            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to save String to file.",e);
+            Commons.log.log(Level.WARNING,"[NexT][Toolkit] Failed to save String to file.",e);
             return false;
         }
         return true;
@@ -477,7 +478,7 @@ public final class Toolkit {
             while ((read = in.readLine()) != null)s.append(read+"\n");
             in.close();
         }catch(IOException e){
-            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to load file to String.",e);
+            Commons.log.log(Level.WARNING,"[NexT][Toolkit] Failed to load file to String.",e);
             return "";
         }
         return s.toString();
@@ -516,7 +517,7 @@ public final class Toolkit {
             md.update(text.getBytes("iso-8859-1"), 0, text.length());
             sha1hash = md.digest();
             return convertToHex(sha1hash);
-        }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Toolkit] Failed to create SHA-1 hash.",e);}
+        }catch(Exception e){Commons.log.log(Level.WARNING,"[NexT][Toolkit] Failed to create SHA-1 hash.",e);}
         return text;
     }
 

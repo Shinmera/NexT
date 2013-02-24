@@ -9,6 +9,7 @@
 
 package NexT.script;
 
+import NexT.Commons;
 import NexT.util.SimpleSet;
 import java.io.File;
 import java.util.Date;
@@ -67,7 +68,7 @@ public class ScriptManager {
         }
 
         public void onChange( File file ){
-            Logger.getLogger("NexT").info("[NexT][ScriptManager] Automatically reloading script '"+file.getName()+"'");
+            Commons.log.info("[NexT][ScriptManager] Automatically reloading script '"+file.getName()+"'");
             loadScript(file,false);
         }
     }

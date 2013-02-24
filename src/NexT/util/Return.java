@@ -9,6 +9,7 @@
 
 package NexT.util;
 
+import NexT.Commons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,7 @@ public class Return {
     public String getError(){return err;}
     public Exception getException(){return e;}
     public boolean justify(){
-        if(!success)Logger.getLogger("NexT.util.Return").log(Level.SEVERE, err, e);
+        if(!success)Commons.log.log(Level.SEVERE, err, e);
         return success;
     }
 }

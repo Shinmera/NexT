@@ -9,6 +9,7 @@
 
 package NexT.window;
 
+import NexT.Commons;
 import NexT.util.Toolkit;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -62,7 +63,7 @@ public class TextEditor extends JDialog implements ActionListener{
     }
 
     public boolean loadFile(File f){
-        Logger.getLogger("NexT").info("[NexT][TextEditor] Loading '"+f.getName()+"'");
+        Commons.log.info("[NexT][TextEditor] Loading '"+f.getName()+"'");
         file=f;
         String temp = Toolkit.loadFileToString(f);
         if(!temp.equals("")){
@@ -72,7 +73,7 @@ public class TextEditor extends JDialog implements ActionListener{
     }
 
     public boolean saveFile(File f){
-        Logger.getLogger("NexT").info("[NexT][TextEditor] Saving to '"+f.getName()+"'");
+        Commons.log.info("[NexT][TextEditor] Saving to '"+f.getName()+"'");
         return Toolkit.saveStringToFile(area.getText(), f);
     }
 

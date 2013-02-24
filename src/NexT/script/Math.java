@@ -9,7 +9,6 @@
 
 package NexT.script;
 
-import java.util.logging.Logger;
 import NexT.err.InvalidArgumentCountException;
 import NexT.err.MissingOperandException;
 import NexT.util.Toolkit;

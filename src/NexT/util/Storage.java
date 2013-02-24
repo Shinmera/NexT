@@ -7,6 +7,7 @@ license: -
 \**********************/
 package NexT.util;
 
+import NexT.Commons;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,7 +52,7 @@ public class Storage {
                     case 'i':integers.put(key, Integer.parseInt(val));break;
                     case 'd':doubles.put(key, Double.parseDouble(val));break;
                     case 'b':booleans.put(key, Boolean.parseBoolean(val));break;
-                    default:Logger.getLogger("NexT").log(Level.WARNING,"[NexT][Storage] Couldn't identify "+i+": "+type+" "+read);break;
+                    default:Commons.log.log(Level.WARNING,"[NexT][Storage] Couldn't identify "+i+": "+type+" "+read);break;
                 }
             }
         }

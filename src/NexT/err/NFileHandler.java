@@ -9,6 +9,7 @@
 
 package NexT.err;
 
+import NexT.Commons;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -33,7 +34,7 @@ public class NFileHandler extends NHandler{
             OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f),"UTF-8");
             pw = new PrintWriter(fw);
         }catch(Exception e){
-            Logger.getLogger("NexT").log(Level.WARNING,"[NexT][NLogger] Couldn't initialize error dump file "+f.getAbsolutePath());
+            Commons.log.log(Level.WARNING,"[NexT][NLogger] Couldn't initialize error dump file "+f.getAbsolutePath());
         }
     }
 

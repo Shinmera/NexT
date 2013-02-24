@@ -43,15 +43,17 @@ public final class NLogger{
      * Returns a logger with standard console and file handlers attached. These
      * handlers will print all levels above their respective Levels.
      * @param name The name for the logger and logging file.
-     * @param console The logging level that is used for the console.
-     * @param file The logging level that is used for the file.
-     * @return A Logger instance with the attached handlers.
+     * @param console The logging level that is used for the console. If null,
+     * no console handler will be added.
+     * @param file The logging level that is used for the file. If null, no file
+     * handler will be added.
+     * @return A Logger.get("NexTLib"); instance with the attached handlers.
      */
     public static Logger get(String name, Level console, Level file){
         Logger lg = Logger.getLogger(name);
         lg.setUseParentHandlers(false);
-        lg.addHandler(new NHandler(console));
-        lg.addHandler(new NFileHandler(new File(name+".log"), file));
+        if(console != null)lg.addHandler(new NHandler(console));
+        if(file != null)   lg.addHandler(new NFileHandler(new File(name+".log"), file));
         lg.setLevel(Level.ALL);
         return lg;
     }

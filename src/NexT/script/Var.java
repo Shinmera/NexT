@@ -9,6 +9,7 @@
 
 package NexT.script;
 
+import NexT.Commons;
 import NexT.util.Toolkit;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -161,13 +162,13 @@ public class Var {
         switch(type){
             case TYPE_BOOLEAN:
                 return (bool) ? 1 : 0;
-            case TYPE_STRING:       Logger.getLogger("NexT").log(Level.WARNING,"[Var] Attempting to fix String to double.");
+            case TYPE_STRING:       Commons.log.log(Level.WARNING,"[Var] Attempting to fix String to double.");
                 return (Toolkit.isNumeric(str)) ? Double.parseDouble(str) : 0;
             case TYPE_INTEGER:
                 return integ+0.0;
             case TYPE_DOUBLE:
                 return doub;
-            case TYPE_STRING_ARRAY: Logger.getLogger("NexT").log(Level.WARNING,"[Var] Attempting to fix String array to first element.");
+            case TYPE_STRING_ARRAY: Commons.log.log(Level.WARNING,"[Var] Attempting to fix String array to first element.");
                 return (Toolkit.isNumeric(a_str[n])) ? Double.parseDouble(str) : 0;
             case TYPE_BOOLEAN_ARRAY:
                 return (a_bool[n]) ? 1 : 0;
@@ -177,7 +178,7 @@ public class Var {
                 return a_doub[n];
             case TYPE_MIXED_ARRAY:
                 return a_var[n].fix();
-            case TYPE_NULL:         Logger.getLogger("NexT").log(Level.WARNING,"[Var] Fixing NULL to 0.");
+            case TYPE_NULL:         Commons.log.log(Level.WARNING,"[Var] Fixing NULL to 0.");
                 return 0.0;
             default: return (Toolkit.isNumeric(str)) ? Double.parseDouble(str) : doub;
         }

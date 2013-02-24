@@ -9,6 +9,7 @@
 
 package NexT.script;
 
+import NexT.Commons;
 import NexT.err.InvalidArgumentCountException;
 import NexT.err.MissingOperandException;
 import NexT.util.Toolkit;
@@ -82,7 +83,7 @@ public class Script {
                         //Variable
                         try{
                             handleVarSet(contents[i],null);
-                        }catch(Exception ex){Logger.getLogger("NexT").log(Level.WARNING,"[Script] Failed to parse line "+i+"!",ex);}
+                        }catch(Exception ex){Commons.log.log(Level.WARNING,"[Script] Failed to parse line "+i+"!",ex);}
                     }
                 }
             }
@@ -155,7 +156,7 @@ public class Script {
     public Var eval(String func,HashMap<String,Var> args){
         if(args==null)args = new HashMap<String,Var>();
         try{return funcs.get(func).exec(args);
-        }catch(Exception ex){Logger.getLogger("NexT").log(Level.SEVERE,"[NexT][Script][Function] Error while running function '"+func+"' on line "+funcs.get(func).getCurrentLine(),ex);}
+        }catch(Exception ex){Commons.log.log(Level.SEVERE,"[NexT][Script][Function] Error while running function '"+func+"' on line "+funcs.get(func).getCurrentLine(),ex);}
         return new Var(Var.TYPE_STRING);
     }
 
@@ -268,7 +269,7 @@ public class Script {
             if(args.get(1).equals(EXPR_GREATER)){         if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() >  NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
             if(args.get(1).equals(EXPR_SMALLER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() <= NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
             if(args.get(1).equals(EXPR_GREATER_OR_EQUAL)){if(NexT.script.Math.parseExpression(args.get(0), var, script).fix() >= NexT.script.Math.parseExpression(args.get(2), var, script).fix())return true;else return false;}
-            }catch(Exception e){Logger.getLogger("NexT").log(Level.WARNING, "[NexT][Script][IfExpression] Failed to evaluate!",e);return false;}
+            }catch(Exception e){Commons.log.log(Level.WARNING, "[NexT][Script][IfExpression] Failed to evaluate!",e);return false;}
             return false;
         }
     }
