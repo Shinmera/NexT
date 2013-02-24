@@ -35,10 +35,10 @@ public class DObject<Type extends Object> {
         if(t==null){
             type = TYPE_NULL;
             g=null;
-        }if(t instanceof Integer){
+        }else if(t instanceof Integer){
             type = TYPE_INTEGER;
             g=t;
-        }if(t instanceof Long){
+        }else if(t instanceof Long){
             type = TYPE_LONG;
             g=t;
         }else if(t instanceof Double){
@@ -102,5 +102,11 @@ public class DObject<Type extends Object> {
     public void set(String s,DObject d) {if(o!=null)o.put(s,d);}
     public void set(String s,Object o)  {set(s,parse(o));}
     public int size(){return (o==null)? 1 : o.size();}
-    public String toString(){return get()+"";}
+    public String toString(){
+        switch(type){
+            case TYPE_NULL:     return "null";
+            case TYPE_LONG:     return get()+"L";
+            default:            return get().toString();
+        }
+    }
 }
