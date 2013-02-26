@@ -213,4 +213,38 @@ public final class StringUtils {
         stringArray[0] = Character.toUpperCase(stringArray[0]);
         return new String(stringArray);
     }
+    
+    /**
+     * Checks if the specified string is alphanumeric (a-Z0-9.-_ ).
+     * @param s The string to check
+     * @return 
+     * @see StringUtils#sanitizeString(java.lang.String) 
+     */
+    public static boolean isAlphanumeric(String s){
+        return s.equals(sanitizeString(s));
+    }
+    
+    /**
+     * Removes all characters that are non-alphanumeric (a-Z0-9.-_ ) from the
+     * string.
+     * @param s The string to sanitise.
+     * @return A stripped, sanitised string.
+     * @see StringUtils#sanitizeString(java.lang.String, java.lang.String) 
+     */
+    public static String sanitizeString(String s){
+        return sanitizeString(s, "a-zA-Z0-9\\s\\.\\-_");
+    }
+    
+    /**
+     * Removes all characters that are not contained within the allowed string.
+     * Note that allowed is a bunch of regex characters and they need to be
+     * escaped as such.
+     * 
+     * @param s The string to sanitise.
+     * @param allowed The allowed characters.
+     * @return A stripped, sanitised string.
+     */
+    public static String sanitizeString(String s, String allowed){
+        return s.replaceAll("[^allowed]", "");
+    }
 }
