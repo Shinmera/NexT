@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
@@ -366,6 +367,27 @@ public final class Toolkit {
         System.arraycopy(A, 0, C, 0, A.length);
         System.arraycopy(B, 0, C, A.length, B.length);
         return C;
+    }
+    
+    /**
+     * Joins an arbitrary number of arrays together.
+     * @param <T> The type of the object of the arrays.
+     * @param first The first array to join
+     * @param rest Any other number of arrays.
+     * @return All the arrays joined together.
+     */
+    public static <T> T[] joinArray(T[] first, T[]... rest) {
+        int totalLength = first.length;
+        for (T[] array : rest) {
+            totalLength += array.length;
+        }
+        T[] result = Arrays.copyOf(first, totalLength);
+        int offset = first.length;
+        for (T[] array : rest) {
+            System.arraycopy(array, 0, result, offset, array.length);
+            offset += array.length;
+        }
+        return result;
     }
 
     public static int[] stringToIntArray(String[] a){
