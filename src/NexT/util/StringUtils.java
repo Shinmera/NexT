@@ -1,6 +1,7 @@
 package NexT.util;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -93,6 +94,24 @@ public final class StringUtils {
         for(int i=start; i<stop; i++) {
             if(i!=0) { out.append(delim); }
             out.append(ary[i].toString());
+        }
+        return out.toString();
+    }
+    
+    /**
+     * Glues together the map with keyvaluedelim inserted between each key and
+     * value and pairdelim between each key-value pair.
+     * 
+     * @param map The map to be glued together.
+     * @param keyvaluedelim The delimiter to put between keys and values.
+     * @param pairdelim The delimiter to put between pairs.
+     * @return The glued map.
+     */
+    public static String implode(Map map, String keyvaluedelim, String pairdelim){
+        StringBuilder out = new StringBuilder();
+        for(Object o : map.keySet()){
+            if(out.length() != 0)out.append(pairdelim);
+            out.append(o).append(keyvaluedelim).append(map.get(o));
         }
         return out.toString();
     }
