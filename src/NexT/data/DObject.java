@@ -60,20 +60,23 @@ public class DObject<Type extends Object> {
     
     public static DObject parse(Object o){
         DObject obj = null;
-        
+        String s = o.toString();
         if(o==null){
             obj = new DObject(null);
         }else if(o instanceof HashMap){
             obj = new DObject<HashMap<String,DObject>>((HashMap<String,DObject>)o);
         }else{
             try{
-                obj = new DObject<Integer>((Integer)Integer.parseInt(o+""));
+                if(s.endsWith("I"))obj = new DObject<Integer>((Integer)Integer.parseInt(s.substring(0, s.length()-1)));
+                else obj = new DObject<Integer>((Integer)Integer.parseInt(s));
             }catch(Exception ex){
                 try{
-                    obj = new DObject<Long>((Long)Long.parseLong(o+""));
+                    if(s.endsWith("L"))obj = new DObject<Long>((Long)Long.parseLong(s.substring(0, s.length()-1)));
+                    else obj = new DObject<Long>((Long)Long.parseLong(s));
                 }catch(Exception ex2){
                     try{
-                        obj = new DObject<Double>((Double)Double.parseDouble(o+""));
+                        if(s.endsWith("D"))obj = new DObject<Double>((Double)Double.parseDouble(s.substring(0, s.length()-1)));
+                        else obj = new DObject<Double>((Double)Double.parseDouble(s));
                     }catch(Exception ex3){
                         if(o instanceof Boolean){
                             obj = new DObject<Boolean>((Boolean)o);
@@ -81,7 +84,7 @@ public class DObject<Type extends Object> {
                         if(o instanceof String){
                             if(o.equals("false"))    obj = new DObject<Boolean>(Boolean.FALSE);
                             else if(o.equals("true"))obj = new DObject<Boolean>(Boolean.TRUE);
-                            else                     obj = new DObject<String>(o+"");
+                            else                     obj = new DObject<String>(s);
                         }else{
                             throw new IllegalArgumentException("Bad class type: '"+o.getClass()+"' is not recognized.");
                         }
