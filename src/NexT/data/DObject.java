@@ -8,6 +8,7 @@
 
 package NexT.data;
 
+import NexT.util.StringUtils;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -109,6 +110,7 @@ public class DObject<Type extends Object> {
         switch(type){
             case TYPE_NULL:     return "null";
             case TYPE_LONG:     return get()+"L";
+            case TYPE_OBJECT:   return StringUtils.implode((HashMap)get(), ":", ", ");
             default:            return get().toString();
         }
     }
