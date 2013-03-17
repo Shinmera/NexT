@@ -59,7 +59,7 @@ public class Restarter {
                 vmArgsOneLine.append(" ");
             }
         }
-        final StringBuffer cmd = new StringBuffer("\"" + javaBin + "\" " + vmArgsOneLine);
+        final StringBuffer cmd = new StringBuffer("" + javaBin + " " + vmArgsOneLine);
 
         String[] cmdArgs = execCmd.split(" ");
         if(cmdArgs[0].endsWith(".jar")) cmd.append("-jar " + new File(cmdArgs[0]).getPath());
@@ -84,7 +84,7 @@ public class Restarter {
      * @return The newly rebuilt restart command.
      */
     public String reset(){        
-        javaBin = System.getProperty("java.home") + "/bin/java";
+        javaBin = (System.getProperty("java.home") + "/bin/java").replaceAll(" ", "\\ ");
         vmArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
         execCmd = System.getProperty(SUN_JAVA_COMMAND);
         addArgs = new String[0];
