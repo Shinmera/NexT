@@ -1,5 +1,6 @@
 package NexT.util;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -11,8 +12,6 @@ import java.util.Random;
  * @version 0.0.0
  */
 public final class StringUtils {
-    
-
     /**
      * Returns the amount of times the {@link sub} String has been found
      * in the {@link stack} String.
@@ -265,5 +264,29 @@ public final class StringUtils {
      */
     public static String sanitizeString(String s, String allowed){
         return s.replaceAll("[^allowed]", "");
+    }
+    
+    public static final SimpleDateFormat defaultSDF = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+    
+    /**
+     * Returns a string representation of the timestamp.
+     * @param timestamp
+     * @return 
+     * @see StringUtils#toHumanTime(long, java.lang.String) 
+     */
+    public static String toHumanTime(long timestamp){return toHumanTime(timestamp,null);}
+    
+    /**
+     * Returns a string representation of the timestamp using the specified
+     * format. The format has to conform to the SimpleDateFormat formatting
+     * rules. If the format is set to null, a default time format of 
+     * yyyy.MM.dd HH:mm:ss is used.
+     * @param timestamp
+     * @param format
+     * @return 
+     * @see SimpleDateFormat#SimpleDateFormat(java.lang.String) 
+     */
+    public static String toHumanTime(long timestamp, String format){
+        return (format==null)? defaultSDF.format(timestamp) : new SimpleDateFormat(format).format(timestamp);
     }
 }
